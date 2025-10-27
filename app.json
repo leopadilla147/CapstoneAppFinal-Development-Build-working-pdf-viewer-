@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "CapstoneReactNative",
+    "slug": "CapstoneReactNative",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/Adaptive_CNSC_Logo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/Adaptive_CNSC_Logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.leopadilla.CapstoneReactNative"
+    },
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df57310a-905d-4a92-99c4-c2e31017cace"
+      }
+    }
+  }
+}
