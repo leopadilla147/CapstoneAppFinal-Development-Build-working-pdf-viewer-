@@ -535,7 +535,7 @@ export const thesisService = {
 
   async createBorrowQR(userId, thesisId) {
     try {
-      console.log('🎫 Creating borrow QR for:', { userId, thesisId });
+      console.log('🎫 Creating simple borrow QR for:', { userId, thesisId });
       
       // Validate inputs
       if (!userId || !thesisId) {
@@ -549,19 +549,14 @@ export const thesisService = {
         throw new Error('Invalid User ID or Thesis ID format');
       }
 
-      // Create QR data with expiration (15 minutes from now)
-      const expiryTime = new Date();
-      expiryTime.setMinutes(expiryTime.getMinutes() + 15);
-
+      // Simple QR data - only essential info for ESP32
       const qrData = {
-        user_id: parsedUserId,
         thesis_id: parsedThesisId,
-        type: 'borrow_request',
-        created_at: new Date().toISOString(),
-        expires_at: expiryTime.toISOString()
+        user_id: parsedUserId
+        // Removed all other fields to keep it simple
       };
 
-      console.log('✅ QR data created:', qrData);
+      console.log('✅ Simple QR data created:', qrData);
       return qrData;
     } catch (error) {
       console.error('❌ Error creating borrow QR:', error);

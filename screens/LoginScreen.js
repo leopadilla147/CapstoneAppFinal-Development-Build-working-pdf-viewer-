@@ -11,12 +11,19 @@ import {
   ScrollView,
   Image,
   ImageBackground,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { authService } from '../services/authService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { width, height } = Dimensions.get('window');
+
+// Responsive sizing
+const responsiveSize = (size) => Math.round((width / 375) * size);
+const responsiveHeight = (size) => Math.round((height / 812) * size);
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [username, setUsername] = useState('');
@@ -156,7 +163,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                   resizeMode="contain"
                 />
                 <Text style={styles.cardTitle}>
-                  {currentUser ? 'Welcome Back' : 'Thesis Hub Login'}
+                  {currentUser ? 'Welcome Back' : 'Thesis Guard Login'}
                 </Text>
                 <Text style={styles.cardSubtitle}>
                   {currentUser 
@@ -174,7 +181,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                   ]}>
                     <Icon 
                       name={currentUser ? "alert-circle" : "alert-octagon"} 
-                      size={20} 
+                      size={responsiveSize(20)} 
                       color={currentUser ? "#D97706" : "#DC2626"} 
                       style={styles.errorIcon}
                     />
@@ -189,7 +196,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
 
                 {success ? (
                   <View style={styles.successContainer}>
-                    <Icon name="check-circle" size={20} color="#166534" style={styles.successIcon} />
+                    <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
                     <Text style={styles.successText}>{success}</Text>
                   </View>
                 ) : null}
@@ -198,7 +205,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                   <View style={styles.inputContainer}>
                     <Text style={styles.label}>Username</Text>
                     <View style={styles.inputWrapper}>
-                      <Icon name="account" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                      <Icon name="account" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                       <TextInput
                         style={styles.input}
                         placeholder="Enter your username"
@@ -218,7 +225,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                     {currentUser ? 'Enter Password to Continue' : 'Password'}
                   </Text>
                   <View style={styles.inputWrapper}>
-                    <Icon name="lock" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                    <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
                       placeholder="Enter your password"
@@ -236,7 +243,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                     >
                       <Icon 
                         name={showPassword ? "eye-off" : "eye"} 
-                        size={20} 
+                        size={responsiveSize(20)} 
                         color="#9CA3AF" 
                       />
                     </TouchableOpacity>
@@ -253,7 +260,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                       {loading ? (
                         <ActivityIndicator color="#FFFFFF" size="small" />
                       ) : (
-                        <Icon name="lock-open" size={20} color="#FFFFFF" />
+                        <Icon name="lock-open" size={responsiveSize(20)} color="#FFFFFF" />
                       )}
                       <Text style={styles.continueButtonText}>
                         {loading ? 'Verifying...' : 'Continue with Password'}
@@ -265,7 +272,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                       onPress={handleLogout}
                       disabled={loading}
                     >
-                      <Icon name="logout" size={20} color="#6B7280" />
+                      <Icon name="logout" size={responsiveSize(20)} color="#6B7280" />
                       <Text style={styles.logoutButtonText}>Logout</Text>
                     </TouchableOpacity>
                   </View>
@@ -279,7 +286,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
                       {loading ? (
                         <ActivityIndicator color="#FFFFFF" size="small" />
                       ) : (
-                        <Icon name="login" size={20} color="#FFFFFF" />
+                        <Icon name="login" size={responsiveSize(20)} color="#FFFFFF" />
                       )}
                       <Text style={styles.loginButtonText}>
                         {loading ? 'Signing In...' : 'Sign In'}
@@ -305,7 +312,6 @@ const LoginScreen = ({ navigation, onLogin }) => {
   );
 };
 
-// ... styles remain the same ...
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -322,8 +328,8 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingHorizontal: responsiveSize(20),
+    paddingVertical: responsiveSize(16),
   },
   loadingContainer: {
     flex: 1,
@@ -332,13 +338,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    marginTop: 16,
+    fontSize: responsiveSize(16),
+    marginTop: responsiveSize(16),
   },
   loginCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
-    padding: 32,
+    borderRadius: responsiveSize(16),
+    padding: responsiveSize(24),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -350,22 +356,22 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: responsiveSize(24),
   },
   logoImage: {
-    width: 80,
-    height: 80,
-    marginBottom: 16,
+    width: responsiveSize(80),
+    height: responsiveSize(80),
+    marginBottom: responsiveSize(16),
   },
   cardTitle: {
-    fontSize: 28,
+    fontSize: responsiveSize(24),
     fontWeight: 'bold',
     color: '#991B1B',
-    marginBottom: 8,
+    marginBottom: responsiveSize(8),
     textAlign: 'center',
   },
   cardSubtitle: {
-    fontSize: 16,
+    fontSize: responsiveSize(14),
     color: '#6B7280',
     textAlign: 'center',
   },
@@ -378,21 +384,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
     borderColor: '#FECACA',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginBottom: responsiveSize(16),
   },
   warningContainer: {
     backgroundColor: '#FFFBEB',
     borderColor: '#FCD34D',
   },
   errorIcon: {
-    marginRight: 8,
+    marginRight: responsiveSize(8),
   },
   errorText: {
     flex: 1,
     color: '#DC2626',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   warningText: {
     color: '#D97706',
@@ -403,26 +409,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
     borderWidth: 1,
     borderColor: '#BBF7D0',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginBottom: responsiveSize(16),
   },
   successIcon: {
-    marginRight: 8,
+    marginRight: responsiveSize(8),
   },
   successText: {
     flex: 1,
     color: '#166534',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: responsiveSize(16),
   },
   label: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: responsiveSize(8),
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -431,88 +437,88 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     position: 'absolute',
-    left: 12,
+    left: responsiveSize(12),
     zIndex: 1,
   },
   input: {
     flex: 1,
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    paddingLeft: 40,
-    fontSize: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(12),
+    paddingLeft: responsiveSize(40),
+    fontSize: responsiveSize(16),
     backgroundColor: '#FFFFFF',
   },
   eyeButton: {
     position: 'absolute',
-    right: 12,
-    padding: 4,
+    right: responsiveSize(12),
+    padding: responsiveSize(4),
   },
   authButtonsContainer: {
-    gap: 12,
+    gap: responsiveSize(12),
   },
   continueButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#DC2626',
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginTop: responsiveSize(8),
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 8,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(12),
+    marginTop: responsiveSize(8),
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   continueButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   logoutButtonText: {
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   loginButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#DC2626',
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginTop: responsiveSize(8),
   },
   loginButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   linkContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: responsiveSize(20),
   },
   linkText: {
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   link: {
     color: '#DC2626',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
   },
 });

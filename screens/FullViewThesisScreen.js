@@ -24,6 +24,10 @@ import * as ScreenCapture from 'expo-screen-capture';
 
 const { width, height } = Dimensions.get('window');
 
+// Responsive sizing
+const responsiveSize = (size) => Math.round((width / 375) * size);
+const responsiveHeight = (size) => Math.round((height / 812) * size);
+
 const FullViewThesisScreen = ({ navigation, route }) => {
   const { thesis } = route.params;
   const [currentUser, setCurrentUser] = useState(null);
@@ -351,13 +355,13 @@ const FullViewThesisScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#dc3545" />
 
-      {/* Header */}
+      {/* Responsive Header */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
+          <Icon name="arrow-left" size={responsiveSize(24)} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Full Thesis View</Text>
         <View style={styles.headerSpacer} />
@@ -365,7 +369,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
 
       {/* Security Warning */}
       <View style={styles.securityWarning}>
-        <Icon name="shield-lock" size={16} color="#fff" />
+        <Icon name="shield-lock" size={responsiveSize(16)} color="#fff" />
         <Text style={styles.securityText}>
           🔒 Protected Content - Screenshots are disabled
         </Text>
@@ -373,7 +377,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
 
       {/* Access Status Banner */}
       <View style={[styles.statusBanner, { backgroundColor: statusInfo.color }]}>
-        <Icon name={statusInfo.icon} size={20} color="#FFFFFF" />
+        <Icon name={statusInfo.icon} size={responsiveSize(20)} color="#FFFFFF" />
         <View style={styles.statusTextContainer}>
           <Text style={styles.statusTitle}>{statusInfo.title}</Text>
           <Text style={styles.statusMessage}>{statusInfo.message}</Text>
@@ -393,7 +397,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
               style={styles.modalCloseButton}
               onPress={handleClosePdfViewer}
             >
-              <Icon name="close" size={24} color="#FFFFFF" />
+              <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {thesis?.title?.substring(0, 30) || 'Thesis Viewer'}...
@@ -408,7 +412,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
               onPress={goToPreviousPage}
               disabled={currentPage <= 1}
             >
-              <Icon name="chevron-left" size={24} color={currentPage <= 1 ? "#999" : "#dc3545"} />
+              <Icon name="chevron-left" size={responsiveSize(24)} color={currentPage <= 1 ? "#999" : "#dc3545"} />
               <Text style={[styles.controlText, currentPage <= 1 && styles.controlTextDisabled]}>
                 Previous
               </Text>
@@ -428,13 +432,13 @@ const FullViewThesisScreen = ({ navigation, route }) => {
               <Text style={[styles.controlText, currentPage >= totalPages && styles.controlTextDisabled]}>
                 Next
               </Text>
-              <Icon name="chevron-right" size={24} color={currentPage >= totalPages ? "#999" : "#dc3545"} />
+              <Icon name="chevron-right" size={responsiveSize(24)} color={currentPage >= totalPages ? "#999" : "#dc3545"} />
             </TouchableOpacity>
           </View>
 
           {/* Security Status */}
           <View style={styles.securityStatus}>
-            <Icon name="shield-check" size={16} color="#28a745" />
+            <Icon name="shield-check" size={responsiveSize(16)} color="#28a745" />
             <Text style={styles.securityStatusText}>
               🔒 Secure Streaming - Downloads are disabled
             </Text>
@@ -480,7 +484,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
             </View>
           ) : (
             <View style={styles.errorContainer}>
-              <Icon name="alert-circle" size={48} color="#dc3545" />
+              <Icon name="alert-circle" size={responsiveSize(48)} color="#dc3545" />
               <Text style={styles.errorTitle}>Failed to Load PDF</Text>
               <Text style={styles.errorMessage}>
                 The thesis document could not be loaded. Please try again later.
@@ -515,15 +519,15 @@ const FullViewThesisScreen = ({ navigation, route }) => {
           {/* Thesis Metadata */}
           <View style={styles.metadataContainer}>
             <View key="author" style={styles.metadataItem}>
-              <Icon name="account" size={16} color="#666" />
+              <Icon name="account" size={responsiveSize(16)} color="#666" />
               <Text style={styles.metadataText}>Author: {thesis?.author || 'Unknown Author'}</Text>
             </View>
             <View key="college" style={styles.metadataItem}>
-              <Icon name="school" size={16} color="#666" />
+              <Icon name="school" size={responsiveSize(16)} color="#666" />
               <Text style={styles.metadataText}>College: {thesis?.college_department || thesis?.college || 'Unknown College'}</Text>
             </View>
             <View key="batch" style={styles.metadataItem}>
-              <Icon name="calendar" size={16} color="#666" />
+              <Icon name="calendar" size={responsiveSize(16)} color="#666" />
               <Text style={styles.metadataText}>Batch: {thesis?.batch || thesis?.year || 'N/A'}</Text>
             </View>
           </View>
@@ -547,7 +551,7 @@ const FullViewThesisScreen = ({ navigation, route }) => {
                   {isLoadingPdf ? (
                     <ActivityIndicator color="#FFFFFF" size="small" />
                   ) : (
-                    <Icon name="file-document" size={20} color="#FFFFFF" />
+                    <Icon name="file-document" size={responsiveSize(20)} color="#FFFFFF" />
                   )}
                   <Text style={styles.viewButtonText}>
                     {isLoadingPdf ? 'Loading...' : 'View Full Thesis'}
@@ -555,13 +559,13 @@ const FullViewThesisScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
 
                 <Text style={styles.securityNote}>
-                  <Icon name="shield-check" size={14} color="#28a745" />
+                  <Icon name="shield-check" size={responsiveSize(14)} color="#28a745" />
                   {' '}Thesis will open in secure streaming viewer with downloads disabled
                 </Text>
               </>
             ) : (
               <View style={styles.noAccessContainer}>
-                <Icon name="lock" size={48} color="#6c757d" />
+                <Icon name="lock" size={responsiveSize(48)} color="#6c757d" />
                 <Text style={styles.noAccessTitle}>Access Required</Text>
                 <Text style={styles.noAccessMessage}>
                   You need approved access to view this thesis. Please go back to the previous screen to request access.
@@ -611,76 +615,73 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   loadingText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: responsiveSize(16),
+    fontSize: responsiveSize(16),
     color: '#666',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 80,
+    height: responsiveHeight(60),
     backgroundColor: '#dc3545',
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    paddingHorizontal: responsiveSize(16),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 5.84,
-    elevation: 8,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   backButton: {
-    padding: 10,
+    padding: responsiveSize(4),
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
     color: '#fff',
   },
   headerSpacer: {
-    width: 40,
+    width: responsiveSize(40),
   },
   securityWarning: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#343a40',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: responsiveSize(8),
+    paddingHorizontal: responsiveSize(16),
   },
   securityText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   statusBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    margin: 16,
-    borderRadius: 8,
+    padding: responsiveSize(16),
+    margin: responsiveSize(16),
+    borderRadius: responsiveSize(8),
   },
   statusTextContainer: {
-    marginLeft: 12,
+    marginLeft: responsiveSize(12),
     flex: 1,
   },
   statusTitle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: responsiveSize(4),
   },
   statusMessage: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     opacity: 0.9,
   },
   mainContent: {
     flex: 1,
-    padding: 20,
+    padding: responsiveSize(16),
   },
   // Modal Styles
   modalContainer: {
@@ -691,28 +692,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 80,
+    height: responsiveHeight(60),
     backgroundColor: '#dc3545',
-    paddingHorizontal: 20,
-    paddingTop: 30,
+    paddingHorizontal: responsiveSize(16),
   },
   modalCloseButton: {
-    padding: 10,
+    padding: responsiveSize(4),
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: 'bold',
     color: '#fff',
     flex: 1,
     textAlign: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: responsiveSize(10),
   },
   pdfControls: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: responsiveSize(16),
+    paddingVertical: responsiveSize(10),
     backgroundColor: '#f8f9fa',
     borderBottomWidth: 1,
     borderBottomColor: '#dee2e6',
@@ -720,9 +720,9 @@ const styles = StyleSheet.create({
   controlButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 6,
+    paddingHorizontal: responsiveSize(15),
+    paddingVertical: responsiveSize(8),
+    borderRadius: responsiveSize(6),
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#dee2e6',
@@ -731,10 +731,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   controlText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#dc3545',
-    marginHorizontal: 5,
+    marginHorizontal: responsiveSize(5),
   },
   controlTextDisabled: {
     color: '#999',
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pageText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#495057',
   },
@@ -752,14 +752,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#d4edda',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: responsiveSize(8),
+    paddingHorizontal: responsiveSize(16),
   },
   securityStatusText: {
     color: '#155724',
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   pdfContainer: {
     flex: 1,
@@ -777,13 +777,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   pdfLoadingText: {
-    marginTop: 16,
-    fontSize: 16,
+    marginTop: responsiveSize(16),
+    fontSize: responsiveSize(16),
     color: '#666',
   },
   progressText: {
-    marginTop: 8,
-    fontSize: 14,
+    marginTop: responsiveSize(8),
+    fontSize: responsiveSize(14),
     color: '#666',
   },
   errorContainer: {
@@ -791,183 +791,183 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f8f9fa',
-    padding: 20,
+    padding: responsiveSize(20),
   },
   errorTitle: {
-    fontSize: 20,
+    fontSize: responsiveSize(20),
     fontWeight: 'bold',
     color: '#dc3545',
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: responsiveSize(16),
+    marginBottom: responsiveSize(16),
     textAlign: 'center',
   },
   errorMessage: {
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     color: '#666',
     textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 22,
+    marginBottom: responsiveSize(30),
+    lineHeight: responsiveSize(22),
   },
   errorButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    maxWidth: 300,
+    maxWidth: responsiveSize(300),
   },
   retryButton: {
     backgroundColor: '#dc3545',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: responsiveSize(20),
+    paddingVertical: responsiveSize(12),
+    borderRadius: responsiveSize(8),
     flex: 1,
-    marginRight: 10,
+    marginRight: responsiveSize(10),
     alignItems: 'center',
   },
   closeButton: {
     backgroundColor: '#6c757d',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: responsiveSize(20),
+    paddingVertical: responsiveSize(12),
+    borderRadius: responsiveSize(8),
     flex: 1,
-    marginLeft: 10,
+    marginLeft: responsiveSize(10),
     alignItems: 'center',
   },
   retryButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: 'bold',
   },
   closeButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: 'bold',
   },
   thesisContainer: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: responsiveSize(12),
+    padding: responsiveSize(16),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 5.84,
-    elevation: 8,
-    borderLeftWidth: 4,
+    shadowRadius: 3.84,
+    elevation: 3,
+    borderLeftWidth: responsiveSize(4),
     borderLeftColor: '#dc3545',
   },
   thesisTitle: {
-    fontSize: 22,
+    fontSize: responsiveSize(20),
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: responsiveSize(16),
     color: '#333',
-    lineHeight: 28,
+    lineHeight: responsiveSize(24),
     textAlign: 'center',
   },
   metadataContainer: {
     backgroundColor: '#f8f9fa',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(12),
+    marginBottom: responsiveSize(16),
   },
   metadataItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: responsiveSize(6),
   },
   metadataText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#666',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: responsiveSize(12),
     color: '#dc3545',
   },
   abstractContainer: {
-    marginBottom: 20,
-    maxHeight: 200,
+    marginBottom: responsiveSize(16),
+    maxHeight: responsiveHeight(200),
   },
   abstractText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: responsiveSize(14),
+    lineHeight: responsiveSize(20),
     color: '#333',
     textAlign: 'justify',
   },
   buttonsContainer: {
-    marginTop: 20,
+    marginTop: responsiveSize(16),
   },
   viewButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#28a745',
-    paddingVertical: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    paddingVertical: responsiveSize(12),
+    borderRadius: responsiveSize(8),
+    marginBottom: responsiveSize(10),
   },
   viewButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   securityNote: {
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     color: '#28a745',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: responsiveSize(12),
     fontStyle: 'italic',
-    lineHeight: 16,
+    lineHeight: responsiveSize(16),
   },
   requestInfo: {
     backgroundColor: '#e9ecef',
-    padding: 15,
-    borderRadius: 8,
-    marginTop: 15,
+    padding: responsiveSize(12),
+    borderRadius: responsiveSize(8),
+    marginTop: responsiveSize(12),
   },
   requestInfoTitle: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: 'bold',
     color: '#495057',
-    marginBottom: 8,
+    marginBottom: responsiveSize(6),
   },
   requestInfoText: {
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     color: '#6c757d',
-    marginBottom: 4,
+    marginBottom: responsiveSize(4),
   },
   noAccessContainer: {
     alignItems: 'center',
-    padding: 20,
+    padding: responsiveSize(16),
     backgroundColor: '#f8f9fa',
-    borderRadius: 10,
-    marginVertical: 10,
+    borderRadius: responsiveSize(8),
+    marginVertical: responsiveSize(8),
   },
   noAccessTitle: {
-    fontSize: 18,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
     color: '#6c757d',
-    marginTop: 10,
-    marginBottom: 8,
+    marginTop: responsiveSize(8),
+    marginBottom: responsiveSize(6),
   },
   noAccessMessage: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#6c757d',
     textAlign: 'center',
-    marginBottom: 15,
-    lineHeight: 20,
+    marginBottom: responsiveSize(12),
+    lineHeight: responsiveSize(20),
   },
   backToDetailsButton: {
     backgroundColor: '#dc3545',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: responsiveSize(16),
+    paddingVertical: responsiveSize(8),
+    borderRadius: responsiveSize(6),
   },
   backToDetailsText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: 'bold',
   },
 });

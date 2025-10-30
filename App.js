@@ -58,7 +58,6 @@ const App = () => {
         }}
       >
         {isAuthenticated ? (
-          // Authenticated screens - ALL screens need onLogout prop
           <>
             <Stack.Screen name="Home">
               {(props) => (

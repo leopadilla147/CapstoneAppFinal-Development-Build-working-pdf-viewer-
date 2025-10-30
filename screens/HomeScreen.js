@@ -11,12 +11,19 @@ import {
   ImageBackground,
   Image,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { thesisService } from '../services/thesisService';
+
+const { width, height } = Dimensions.get('window');
+
+// Responsive sizing
+const responsiveSize = (size) => Math.round((width / 375) * size);
+const responsiveHeight = (size) => Math.round((height / 812) * size);
 
 const HomeScreen = ({ navigation, onLogout }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -42,8 +49,7 @@ const HomeScreen = ({ navigation, onLogout }) => {
     try {
       const userData = await AsyncStorage.getItem('user');
       if (userData) {
-        const user = JSON.parse(userData);
-        setCurrentUser(user);
+        setCurrentUser(JSON.parse(userData));
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -153,226 +159,221 @@ const HomeScreen = ({ navigation, onLogout }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <ImageBackground 
-        source={require('../assets/origbg1.png')} 
-        style={styles.backgroundImage}
-        resizeMode="cover"
+      <StatusBar barStyle="light-content" backgroundColor="#dc3545" />
+      
+      {/* Responsive Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+          <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
+        </TouchableOpacity>
+        
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('../assets/logo-small.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.headerTitle}>Thesis Guard</Text>
+        </View>
+        
+        <View style={styles.headerSpacer} />
+      </View>
+
+      {/* Mobile Navigation Menu Modal */}
+      <Modal
+        visible={isMenuVisible}
+        transparent={true}
+        animationType="none"
+        onRequestClose={toggleMenu}
       >
-        {/* Header with Hamburger Menu and Logo */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-            <Icon name="menu" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          
-          <View style={styles.logoContainer}>
-            <Image 
-              source={require('../assets/logo-small.png')} 
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.headerTitle}>Thesis Hub</Text>
-          </View>
-          
-          <View style={styles.headerSpacer} />
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={toggleMenu}
+        >
+          <Animated.View 
+            style={[
+              styles.mobileMenu,
+              {
+                transform: [{ translateX: slideAnim }]
+              }
+            ]}
+          >
+            <View style={styles.menuHeader}>
+              <Image 
+                source={require('../assets/logo-small.png')} 
+                style={styles.menuLogo}
+                resizeMode="contain"
+              />
+              <Text style={styles.menuTitle}>Thesis Guard</Text>
+              <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
+                <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>{currentUser?.full_name || 'User'}</Text>
+              <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
+            </View>
+
+            <View style={styles.menuItems}>
+              <TouchableOpacity 
+                style={styles.menuItem}
+                onPress={() => handleNavigation('Home')}
+              >
+                <Icon name="home" size={responsiveSize(20)} color="#333" />
+                <Text style={styles.menuItemText}>Home</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.menuItem}
+                onPress={() => handleNavigation('Profile')}
+              >
+                <Icon name="account" size={responsiveSize(20)} color="#333" />
+                <Text style={styles.menuItemText}>Profile</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.menuItem}
+                onPress={() => handleNavigation('AccountSettings')}
+              >
+                <Icon name="cog" size={responsiveSize(20)} color="#333" />
+                <Text style={styles.menuItemText}>Account Settings</Text>
+              </TouchableOpacity>
+
+              {userRole === 'admin' && (
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('AdminDashboard')}
+                >
+                  <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Admin Dashboard</Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity 
+                style={[styles.menuItem, styles.logoutButton]}
+                onPress={handleLogout}
+              >
+                <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
+                <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Main Content */}
+      <ScrollView 
+        style={styles.mainContent} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Welcome Section */}
+        <View style={styles.welcomeSection}>
+          <Text style={styles.welcomeText}>Welcome back,</Text>
+          <Text style={styles.userName}>{currentUser?.full_name || 'Student'}</Text>
+          <Text style={styles.welcomeSubtitle}>
+            {userRole === 'admin' 
+              ? 'Manage theses and user access requests' 
+              : 'Access research papers and scan QR codes'
+            }
+          </Text>
         </View>
 
-        {/* Mobile Navigation Menu Modal */}
-        <Modal
-          visible={isMenuVisible}
-          transparent={true}
-          animationType="none"
-          onRequestClose={toggleMenu}
-        >
+        {/* Quick Actions */}
+        <View style={styles.actionsContainer}>
           <TouchableOpacity 
-            style={styles.modalOverlay}
-            activeOpacity={1}
-            onPress={toggleMenu}
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('QRScanner')}
           >
-            <Animated.View 
-              style={[
-                styles.mobileMenu,
-                {
-                  transform: [{ translateX: slideAnim }]
-                }
-              ]}
-            >
-              <View style={styles.menuHeader}>
-                <Image 
-                  source={require('../assets/logo-small.png')} 
-                  style={styles.menuLogo}
-                  resizeMode="contain"
-                />
-                <Text style={styles.menuTitle}>Navigation</Text>
-                <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
-                  <Icon name="close" size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.userInfo}>
-                <Text style={styles.userName}>{currentUser?.full_name || 'User'}</Text>
-                <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
-              </View>
-
-              <View style={styles.menuItems}>
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => handleNavigation('Home')}
-                >
-                  <Icon name="home" size={20} color="#333" />
-                  <Text style={styles.menuItemText}>Home</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => handleNavigation('Profile')}
-                >
-                  <Icon name="account" size={20} color="#333" />
-                  <Text style={styles.menuItemText}>Profile</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => handleNavigation('AccountSettings')}
-                >
-                  <Icon name="cog" size={20} color="#333" />
-                  <Text style={styles.menuItemText}>Account Settings</Text>
-                </TouchableOpacity>
-
-                {userRole === 'admin' && (
-                  <TouchableOpacity 
-                    style={styles.menuItem}
-                    onPress={() => handleNavigation('AdminDashboard')}
-                  >
-                    <Icon name="shield-account" size={20} color="#333" />
-                    <Text style={styles.menuItemText}>Admin Dashboard</Text>
-                  </TouchableOpacity>
-                )}
-
-                <TouchableOpacity 
-                  style={[styles.menuItem, styles.logoutButton]}
-                  onPress={handleLogout}
-                >
-                  <Icon name="logout" size={20} color="#FFFFFF" />
-                  <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-          </TouchableOpacity>
-        </Modal>
-
-        {/* Main Content */}
-        <ScrollView 
-          style={styles.mainContent} 
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          {/* Welcome Section */}
-          <View style={styles.welcomeSection}>
-            <Text style={styles.welcomeText}>Welcome back,</Text>
-            <Text style={styles.userName}>{currentUser?.full_name || 'Student'}</Text>
-            <Text style={styles.welcomeSubtitle}>
-              {userRole === 'admin' 
-                ? 'Manage theses and user access requests' 
-                : 'Access research papers and scan QR codes'
-              }
-            </Text>
-          </View>
-
-          {/* Quick Actions */}
-          <View style={styles.actionsContainer}>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('QRScanner')}
-            >
-              <View style={styles.actionIconContainer}>
-                <Icon name="qrcode-scan" size={24} color="#dc3545" />
-              </View>
-              <Text style={styles.actionText}>Scan QR</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('Profile')}
-            >
-              <View style={styles.actionIconContainer}>
-                <Icon name="account" size={24} color="#dc3545" />
-              </View>
-              <Text style={styles.actionText}>Profile</Text>
-            </TouchableOpacity>
-
-            {userRole === 'admin' && (
-              <TouchableOpacity 
-                style={styles.actionButton}
-                onPress={() => navigation.navigate('AdminDashboard')}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Icon name="shield-account" size={24} color="#dc3545" />
-                </View>
-                <Text style={styles.actionText}>Admin</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Recent Theses Section */}
-          <View style={styles.recentSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.recentTitle}>Recently Accessed</Text>
+            <View style={styles.actionIconContainer}>
+              <Icon name="qrcode-scan" size={responsiveSize(24)} color="#dc3545" />
             </View>
-            
-            {loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#dc3545" />
-                <Text style={styles.loadingText}>Loading recent theses...</Text>
+            <Text style={styles.actionText}>Scan QR</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <View style={styles.actionIconContainer}>
+              <Icon name="account" size={responsiveSize(24)} color="#dc3545" />
+            </View>
+            <Text style={styles.actionText}>Profile</Text>
+          </TouchableOpacity>
+
+          {userRole === 'admin' && (
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('AdminDashboard')}
+            >
+              <View style={styles.actionIconContainer}>
+                <Icon name="shield-account" size={responsiveSize(24)} color="#dc3545" />
               </View>
-            ) : (
-              <View style={styles.recentList}>
-                {recentTheses.length === 0 ? (
-                  <View style={styles.emptyState}>
-                    <Icon name="book-open" size={40} color="#999" />
-                    <Text style={styles.emptyStateText}>No recent theses</Text>
-                    <Text style={styles.emptyStateSubtext}>
-                      {userRole === 'admin' 
-                        ? 'Start managing theses from admin dashboard' 
-                        : 'Scan QR codes to access theses'
-                      }
-                    </Text>
-                  </View>
-                ) : (
-                  recentTheses.map((thesis, index) => (
-                    <TouchableOpacity 
-                      key={thesis.thesis_id}
-                      style={styles.thesisItem}
-                      onPress={() => handleThesisPress(thesis)}
-                    >
-                      <View style={styles.thesisNumber}>
-                        <Text style={styles.thesisNumberText}>{index + 1}</Text>
-                      </View>
-                      <View style={styles.thesisContent}>
-                        <Text style={styles.thesisTitle} numberOfLines={2}>
-                          {thesis.title}
-                        </Text>
-                        <Text style={styles.thesisAuthor} numberOfLines={1}>
-                          by {thesis.author}
-                        </Text>
-                        <View style={styles.thesisMeta}>
-                          <Text style={styles.thesisDepartment}>{thesis.college_department}</Text>
-                          <Text style={styles.thesisDate}>{formatDate(thesis.created_at)}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.arrowContainer}>
-                        <Icon name="chevron-right" size={20} color="#dc3545" />
-                      </View>
-                    </TouchableOpacity>
-                  ))
-                )}
-              </View>
-            )}
+              <Text style={styles.actionText}>Admin</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Recent Theses Section */}
+        <View style={styles.recentSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.recentTitle}>Recently Accessed</Text>
           </View>
-        </ScrollView>
-      </ImageBackground>
+          
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#dc3545" />
+              <Text style={styles.loadingText}>Loading recent theses...</Text>
+            </View>
+          ) : (
+            <View style={styles.recentList}>
+              {recentTheses.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Icon name="book-open" size={responsiveSize(40)} color="#999" />
+                  <Text style={styles.emptyStateText}>No recent theses</Text>
+                  <Text style={styles.emptyStateSubtext}>
+                    {userRole === 'admin' 
+                      ? 'Start managing theses from admin dashboard' 
+                      : 'Scan QR codes to access theses'
+                    }
+                  </Text>
+                </View>
+              ) : (
+                recentTheses.map((thesis, index) => (
+                  <TouchableOpacity 
+                    key={thesis.thesis_id}
+                    style={styles.thesisItem}
+                    onPress={() => handleThesisPress(thesis)}
+                  >
+                    <View style={styles.thesisNumber}>
+                      <Text style={styles.thesisNumberText}>{index + 1}</Text>
+                    </View>
+                    <View style={styles.thesisContent}>
+                      <Text style={styles.thesisTitle} numberOfLines={2}>
+                        {thesis.title}
+                      </Text>
+                      <Text style={styles.thesisAuthor} numberOfLines={1}>
+                        by {thesis.author}
+                      </Text>
+                      <View style={styles.thesisMeta}>
+                        <Text style={styles.thesisDepartment}>{thesis.college_department}</Text>
+                        <Text style={styles.thesisDate}>{formatDate(thesis.created_at)}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.arrowContainer}>
+                      <Icon name="chevron-right" size={responsiveSize(20)} color="#dc3545" />
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -380,51 +381,43 @@ const HomeScreen = ({ navigation, onLogout }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'transparent',
-  },
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 80,
-    backgroundColor: 'rgba(220, 53, 69, 0.95)',
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    height: responsiveHeight(60),
+    backgroundColor: '#dc3545',
+    paddingHorizontal: responsiveSize(16),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.3,
-    shadowRadius: 5.84,
-    elevation: 8,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   menuButton: {
-    padding: 10,
+    padding: responsiveSize(4),
   },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
+    width: responsiveSize(30),
+    height: responsiveSize(30),
+    marginRight: responsiveSize(10),
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
     color: '#fff',
   },
   headerSpacer: {
-    width: 40,
+    width: responsiveSize(40),
   },
   modalOverlay: {
     flex: 1,
@@ -435,7 +428,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: 280,
+    width: responsiveSize(280),
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: {
@@ -449,63 +442,47 @@ const styles = StyleSheet.create({
   menuHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 25,
+    paddingHorizontal: responsiveSize(20),
+    paddingVertical: responsiveSize(16),
     borderBottomWidth: 1,
     borderBottomColor: '#e9ecef',
     backgroundColor: '#dc3545',
   },
   menuLogo: {
-    width: 25,
-    height: 25,
-    marginRight: 10,
+    width: responsiveSize(25),
+    height: responsiveSize(25),
+    marginRight: responsiveSize(10),
   },
   menuTitle: {
-    fontSize: 20,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
     color: '#fff',
     flex: 1,
   },
   closeButton: {
-    padding: 5,
-  },
-  userInfo: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
-    backgroundColor: '#f8f9fa',
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  userRole: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
+    padding: responsiveSize(4),
   },
   menuItems: {
-    paddingVertical: 10,
+    paddingVertical: responsiveSize(10),
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingVertical: responsiveSize(12),
+    paddingHorizontal: responsiveSize(20),
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
   menuItemText: {
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     color: '#333',
-    marginLeft: 10,
+    marginLeft: responsiveSize(10),
   },
   logoutButton: {
-    marginTop: 20,
+    marginTop: responsiveSize(20),
     backgroundColor: '#dc3545',
-    borderRadius: 8,
-    marginHorizontal: 20,
+    borderRadius: responsiveSize(8),
+    marginHorizontal: responsiveSize(20),
     justifyContent: 'center',
   },
   logoutText: {
@@ -514,59 +491,13 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-    padding: 20,
+    padding: responsiveSize(16),
   },
   welcomeSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 25,
-    borderRadius: 20,
-    marginBottom: 25,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 5.84,
-    elevation: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#dc3545',
-  },
-  welcomeText: {
-    fontSize: 28,
-    fontWeight: '300',
-    color: '#333',
-    marginBottom: 5,
-  },
-  userName: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#dc3545',
-    marginBottom: 10,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    lineHeight: 22,
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
-  },
-  actionButton: {
-    alignItems: 'center',
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  actionIconContainer: {
-    width: 60,
-    height: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
+    backgroundColor: '#fff',
+    padding: responsiveSize(20),
+    borderRadius: responsiveSize(12),
+    marginBottom: responsiveSize(20),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -574,57 +505,103 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
+    borderLeftWidth: responsiveSize(4),
+    borderLeftColor: '#dc3545',
+  },
+  welcomeText: {
+    fontSize: responsiveSize(24),
+    fontWeight: '300',
+    color: '#333',
+    marginBottom: responsiveSize(5),
+  },
+  userName: {
+    fontSize: responsiveSize(28),
+    fontWeight: 'bold',
+    color: '#dc3545',
+    marginBottom: responsiveSize(8),
+  },
+  welcomeSubtitle: {
+    fontSize: responsiveSize(14),
+    color: '#666',
+    lineHeight: responsiveSize(20),
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: responsiveSize(24),
+  },
+  actionButton: {
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: responsiveSize(5),
+  },
+  actionIconContainer: {
+    width: responsiveSize(60),
+    height: responsiveSize(60),
+    backgroundColor: '#fff',
+    borderRadius: responsiveSize(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: responsiveSize(8),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
   actionText: {
-    color: '#fff',
-    fontSize: 14,
+    color: '#333',
+    fontSize: responsiveSize(12),
     fontWeight: '600',
     textAlign: 'center',
   },
   recentSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: responsiveSize(12),
+    padding: responsiveSize(16),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 5.84,
-    elevation: 8,
-    borderLeftWidth: 4,
+    shadowRadius: 3.84,
+    elevation: 3,
+    borderLeftWidth: responsiveSize(4),
     borderLeftColor: '#dc3545',
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: responsiveSize(16),
   },
   recentTitle: {
-    fontSize: 22,
+    fontSize: responsiveSize(18),
     fontWeight: 'bold',
     color: '#333',
   },
   loadingContainer: {
     alignItems: 'center',
-    padding: 40,
+    padding: responsiveSize(40),
   },
   loadingText: {
-    marginTop: 10,
+    marginTop: responsiveSize(10),
     color: '#666',
-    fontSize: 16,
+    fontSize: responsiveSize(14),
   },
   recentList: {
-    marginBottom: 10,
+    marginBottom: responsiveSize(10),
   },
   thesisItem: {
     backgroundColor: '#f8f9fa',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: responsiveSize(12),
+    borderRadius: responsiveSize(8),
+    marginBottom: responsiveSize(10),
     borderWidth: 1,
     borderColor: '#e9ecef',
     flexDirection: 'row',
@@ -639,33 +616,33 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   thesisNumber: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: responsiveSize(30),
+    height: responsiveSize(30),
+    borderRadius: responsiveSize(15),
     backgroundColor: '#dc3545',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: responsiveSize(12),
   },
   thesisNumberText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   thesisContent: {
     flex: 1,
   },
   thesisTitle: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: responsiveSize(4),
     color: '#333',
-    lineHeight: 18,
+    lineHeight: responsiveSize(18),
   },
   thesisAuthor: {
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     color: '#666',
-    marginBottom: 6,
+    marginBottom: responsiveSize(6),
     fontStyle: 'italic',
   },
   thesisMeta: {
@@ -674,36 +651,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   thesisDepartment: {
-    fontSize: 11,
+    fontSize: responsiveSize(11),
     color: '#dc3545',
     fontWeight: '500',
     backgroundColor: 'rgba(220, 53, 69, 0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: responsiveSize(6),
+    paddingVertical: responsiveSize(2),
+    borderRadius: responsiveSize(4),
   },
   thesisDate: {
-    fontSize: 11,
+    fontSize: responsiveSize(11),
     color: '#999',
   },
   arrowContainer: {
-    marginLeft: 10,
+    marginLeft: responsiveSize(8),
   },
   emptyState: {
     alignItems: 'center',
-    padding: 40,
+    padding: responsiveSize(40),
   },
   emptyStateText: {
-    fontSize: 18,
+    fontSize: responsiveSize(16),
     color: '#666',
-    marginTop: 10,
+    marginTop: responsiveSize(8),
     fontWeight: '600',
   },
   emptyStateSubtext: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#999',
-    marginTop: 5,
+    marginTop: responsiveSize(4),
     textAlign: 'center',
+  },
+  userInfo: {
+    padding: responsiveSize(16),
+    borderBottomWidth: 1,
+    borderBottomColor: '#e9ecef',
+    backgroundColor: '#f8f9fa',
+  },
+  userName: {
+    fontSize: responsiveSize(16),
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  userRole: {
+    fontSize: responsiveSize(14),
+    color: '#666',
+    marginTop: responsiveSize(4),
   },
 });
 

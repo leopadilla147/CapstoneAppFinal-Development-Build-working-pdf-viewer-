@@ -13,12 +13,19 @@ import {
   ImageBackground,
   ActivityIndicator,
   Modal,
-  FlatList
+  FlatList,
+  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { authService } from '../services/authService';
 import { supabase } from '../config/supabase';
+
+const { width, height } = Dimensions.get('window');
+
+// Responsive sizing
+const responsiveSize = (size) => Math.round((width / 375) * size);
+const responsiveHeight = (size) => Math.round((height / 812) * size);
 
 const SignupScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -310,7 +317,7 @@ const SignupScreen = ({ navigation }) => {
           <View style={styles.datePickerHeader}>
             <Text style={styles.datePickerTitle}>Select Birthdate</Text>
             <TouchableOpacity onPress={handleDateCancel}>
-              <Icon name="close" size={24} color="#DC2626" />
+              <Icon name="close" size={responsiveSize(24)} color="#DC2626" />
             </TouchableOpacity>
           </View>
           
@@ -385,14 +392,14 @@ const SignupScreen = ({ navigation }) => {
               <View style={styles.form}>
                 {error ? (
                   <View style={styles.errorContainer}>
-                    <Icon name="alert-octagon" size={20} color="#DC2626" style={styles.errorIcon} />
+                    <Icon name="alert-octagon" size={responsiveSize(20)} color="#DC2626" style={styles.errorIcon} />
                     <Text style={styles.errorText}>{error}</Text>
                   </View>
                 ) : null}
 
                 {success ? (
                   <View style={styles.successContainer}>
-                    <Icon name="check-circle" size={20} color="#166534" style={styles.successIcon} />
+                    <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
                     <Text style={styles.successText}>{success}</Text>
                   </View>
                 ) : null}
@@ -416,7 +423,7 @@ const SignupScreen = ({ navigation }) => {
                 {/* Personal Information */}
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
-                    <Icon name="account" size={20} color="#DC2626" />
+                    <Icon name="account" size={responsiveSize(20)} color="#DC2626" />
                     <Text style={styles.sectionTitle}>Personal Information</Text>
                   </View>
                   
@@ -424,7 +431,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Full Name *</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="account" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="account" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="Enter your full name"
@@ -438,7 +445,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Username *</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="account-circle" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="account-circle" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="Choose a username"
@@ -453,7 +460,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Email Address *</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="email" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="email" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="your.email@cnsc.edu.ph"
@@ -469,7 +476,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Phone Number</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="phone" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="phone" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="+63 912 345 6789"
@@ -489,7 +496,7 @@ const SignupScreen = ({ navigation }) => {
                         onPress={handleDateSelect}
                       >
                         <View style={styles.inputWrapper}>
-                          <Icon name="cake" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                          <Icon name="cake" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                           <Text style={[
                             styles.dropdownButtonText,
                             !formData.birthdate && styles.placeholderText
@@ -498,7 +505,7 @@ const SignupScreen = ({ navigation }) => {
                           </Text>
                           <Icon 
                             name="calendar" 
-                            size={20} 
+                            size={responsiveSize(20)} 
                             color="#9CA3AF"
                             style={styles.dropdownArrow}
                           />
@@ -517,7 +524,7 @@ const SignupScreen = ({ navigation }) => {
                 {isStudent && (
                   <View style={styles.section}>
                     <View style={styles.sectionHeader}>
-                      <Icon name="book-open" size={20} color="#DC2626" />
+                      <Icon name="book-open" size={responsiveSize(20)} color="#DC2626" />
                       <Text style={styles.sectionTitle}>Academic Information</Text>
                     </View>
                     
@@ -526,7 +533,7 @@ const SignupScreen = ({ navigation }) => {
                       <View style={styles.inputContainer}>
                         <Text style={styles.label}>Student ID *</Text>
                         <View style={styles.inputWrapper}>
-                          <Icon name="card-account-details" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                          <Icon name="card-account-details" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                           <TextInput
                             style={styles.input}
                             placeholder="Enter your student ID"
@@ -547,7 +554,7 @@ const SignupScreen = ({ navigation }) => {
                           disabled={loadingDepartments}
                         >
                           <View style={styles.inputWrapper}>
-                            <Icon name="school" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                            <Icon name="school" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                             <Text style={[
                               styles.dropdownButtonText,
                               !formData.college_department && styles.placeholderText
@@ -556,7 +563,7 @@ const SignupScreen = ({ navigation }) => {
                             </Text>
                             <Icon 
                               name={loadingDepartments ? "refresh" : "chevron-down"} 
-                              size={20} 
+                              size={responsiveSize(20)} 
                               color="#9CA3AF"
                               style={styles.dropdownArrow}
                             />
@@ -574,7 +581,7 @@ const SignupScreen = ({ navigation }) => {
                               <View style={styles.dropdownHeader}>
                                 <Text style={styles.dropdownTitle}>Select College Department</Text>
                                 <TouchableOpacity onPress={() => setShowCollegeDropdown(false)}>
-                                  <Icon name="close" size={24} color="#DC2626" />
+                                  <Icon name="close" size={responsiveSize(24)} color="#DC2626" />
                                 </TouchableOpacity>
                               </View>
                               {loadingDepartments ? (
@@ -607,7 +614,7 @@ const SignupScreen = ({ navigation }) => {
                           disabled={!formData.college_department || loadingCourses}
                         >
                           <View style={styles.inputWrapper}>
-                            <Icon name="book-education" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                            <Icon name="book-education" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                             <Text style={[
                               styles.dropdownButtonText,
                               !formData.course && styles.placeholderText
@@ -616,7 +623,7 @@ const SignupScreen = ({ navigation }) => {
                             </Text>
                             <Icon 
                               name={loadingCourses ? "refresh" : "chevron-down"} 
-                              size={20} 
+                              size={responsiveSize(20)} 
                               color="#9CA3AF"
                               style={styles.dropdownArrow}
                             />
@@ -634,7 +641,7 @@ const SignupScreen = ({ navigation }) => {
                               <View style={styles.dropdownHeader}>
                                 <Text style={styles.dropdownTitle}>Select Course/Program</Text>
                                 <TouchableOpacity onPress={() => setShowCourseDropdown(false)}>
-                                  <Icon name="close" size={24} color="#DC2626" />
+                                  <Icon name="close" size={responsiveSize(24)} color="#DC2626" />
                                 </TouchableOpacity>
                               </View>
                               {loadingCourses ? (
@@ -676,7 +683,7 @@ const SignupScreen = ({ navigation }) => {
                           onPress={() => setShowYearLevelDropdown(true)}
                         >
                           <View style={styles.inputWrapper}>
-                            <Icon name="calendar" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                            <Icon name="calendar" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                             <Text style={[
                               styles.dropdownButtonText,
                               !formData.year_level && styles.placeholderText
@@ -685,7 +692,7 @@ const SignupScreen = ({ navigation }) => {
                             </Text>
                             <Icon 
                               name="chevron-down" 
-                              size={20} 
+                              size={responsiveSize(20)} 
                               color="#9CA3AF"
                               style={styles.dropdownArrow}
                             />
@@ -703,7 +710,7 @@ const SignupScreen = ({ navigation }) => {
                               <View style={styles.dropdownHeader}>
                                 <Text style={styles.dropdownTitle}>Select Year Level</Text>
                                 <TouchableOpacity onPress={() => setShowYearLevelDropdown(false)}>
-                                  <Icon name="close" size={24} color="#DC2626" />
+                                  <Icon name="close" size={responsiveSize(24)} color="#DC2626" />
                                 </TouchableOpacity>
                               </View>
                               <FlatList
@@ -723,7 +730,7 @@ const SignupScreen = ({ navigation }) => {
                 {/* Password */}
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
-                    <Icon name="shield-account" size={20} color="#DC2626" />
+                    <Icon name="shield-account" size={responsiveSize(20)} color="#DC2626" />
                     <Text style={styles.sectionTitle}>Security</Text>
                   </View>
                   
@@ -731,7 +738,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Password *</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="lock" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="At least 6 characters"
@@ -746,7 +753,7 @@ const SignupScreen = ({ navigation }) => {
                         >
                           <Icon 
                             name={showPassword ? "eye-off" : "eye"} 
-                            size={20} 
+                            size={responsiveSize(20)} 
                             color="#9CA3AF" 
                           />
                         </TouchableOpacity>
@@ -756,7 +763,7 @@ const SignupScreen = ({ navigation }) => {
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Confirm Password *</Text>
                       <View style={styles.inputWrapper}>
-                        <Icon name="lock-check" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                        <Icon name="lock-check" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
                         <TextInput
                           style={styles.input}
                           placeholder="Confirm your password"
@@ -771,7 +778,7 @@ const SignupScreen = ({ navigation }) => {
                         >
                           <Icon 
                             name={showConfirmPassword ? "eye-off" : "eye"} 
-                            size={20} 
+                            size={responsiveSize(20)} 
                             color="#9CA3AF" 
                           />
                         </TouchableOpacity>
@@ -786,7 +793,7 @@ const SignupScreen = ({ navigation }) => {
                     style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}
                     onPress={() => setAgreedToTerms(!agreedToTerms)}
                   >
-                    {agreedToTerms && <Icon name="check" size={14} color="#FFFFFF" />}
+                    {agreedToTerms && <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />}
                   </TouchableOpacity>
                   <Text style={styles.termsText}>
                     I agree to the{' '}
@@ -808,7 +815,7 @@ const SignupScreen = ({ navigation }) => {
                   {loading ? (
                     <ActivityIndicator color="#FFFFFF" size="small" />
                   ) : (
-                    <Icon name="account-plus" size={20} color="#FFFFFF" />
+                    <Icon name="account-plus" size={responsiveSize(20)} color="#FFFFFF" />
                   )}
                   <Text style={styles.signupButtonText}>
                     {loading ? 'Creating Account...' : 'Create Account'}
@@ -851,13 +858,13 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 20,
+    paddingHorizontal: responsiveSize(16),
+    paddingVertical: responsiveSize(16),
   },
   signupCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: responsiveSize(16),
+    padding: responsiveSize(20),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -869,25 +876,25 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: responsiveSize(20),
   },
   logoImage: {
-    width: 80,
-    height: 80,
-    marginBottom: 16,
+    width: responsiveSize(80),
+    height: responsiveSize(80),
+    marginBottom: responsiveSize(16),
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: responsiveSize(24),
     fontWeight: 'bold',
     color: '#991B1B',
-    marginBottom: 8,
+    marginBottom: responsiveSize(8),
     textAlign: 'center',
   },
   cardSubtitle: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#6B7280',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: responsiveSize(20),
   },
   form: {
     width: '100%',
@@ -898,16 +905,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF2F2',
     borderWidth: 1,
     borderColor: '#FECACA',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginBottom: responsiveSize(16),
   },
   errorIcon: {
-    marginRight: 8,
+    marginRight: responsiveSize(8),
   },
   errorText: {
     color: '#DC2626',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     flex: 1,
   },
   successContainer: {
@@ -916,16 +923,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
     borderWidth: 1,
     borderColor: '#BBF7D0',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginBottom: responsiveSize(16),
   },
   successIcon: {
-    marginRight: 8,
+    marginRight: responsiveSize(8),
   },
   successText: {
     color: '#166534',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     flex: 1,
   },
   // Toggle Styles
@@ -934,12 +941,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#F3F4F6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
+    padding: responsiveSize(16),
+    borderRadius: responsiveSize(12),
+    marginBottom: responsiveSize(20),
   },
   toggleLabel: {
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
     color: '#374151',
   },
@@ -951,58 +958,58 @@ const styles = StyleSheet.create({
     // Additional active styles if needed
   },
   toggleTrack: {
-    width: 50,
-    height: 28,
+    width: responsiveSize(50),
+    height: responsiveSize(28),
     backgroundColor: '#D1D5DB',
-    borderRadius: 14,
-    marginRight: 8,
-    padding: 2,
+    borderRadius: responsiveSize(14),
+    marginRight: responsiveSize(8),
+    padding: responsiveSize(2),
     transition: 'all 0.3s ease',
   },
   toggleTrackActive: {
     backgroundColor: '#DC2626',
   },
   toggleThumb: {
-    width: 24,
-    height: 24,
+    width: responsiveSize(24),
+    height: responsiveSize(24),
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: responsiveSize(12),
     transform: [{ translateX: 0 }],
   },
   toggleThumbActive: {
-    transform: [{ translateX: 22 }],
+    transform: [{ translateX: responsiveSize(22) }],
   },
   toggleText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#374151',
-    minWidth: 30,
+    minWidth: responsiveSize(30),
   },
   section: {
-    marginBottom: 24,
+    marginBottom: responsiveSize(20),
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: responsiveSize(12),
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: responsiveSize(18),
     fontWeight: '600',
     color: '#374151',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   grid: {
-    gap: 16,
+    gap: responsiveSize(12),
   },
   inputContainer: {
     width: '100%',
   },
   label: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: responsiveSize(8),
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -1011,17 +1018,17 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     position: 'absolute',
-    left: 12,
+    left: responsiveSize(12),
     zIndex: 1,
   },
   input: {
     width: '100%',
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    paddingLeft: 40,
-    fontSize: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(12),
+    paddingLeft: responsiveSize(40),
+    fontSize: responsiveSize(16),
     backgroundColor: '#FFFFFF',
     color: '#374151',
   },
@@ -1030,14 +1037,14 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    borderRadius: 8,
+    borderRadius: responsiveSize(8),
     backgroundColor: '#FFFFFF',
   },
   dropdownButtonText: {
     flex: 1,
-    padding: 12,
-    paddingLeft: 40,
-    fontSize: 16,
+    padding: responsiveSize(12),
+    paddingLeft: responsiveSize(40),
+    fontSize: responsiveSize(16),
     color: '#374151',
   },
   placeholderText: {
@@ -1045,30 +1052,30 @@ const styles = StyleSheet.create({
   },
   dropdownArrow: {
     position: 'absolute',
-    right: 12,
+    right: responsiveSize(12),
   },
   eyeButton: {
     position: 'absolute',
-    right: 12,
-    padding: 4,
+    right: responsiveSize(12),
+    padding: responsiveSize(4),
   },
   // Age Display
   ageDisplay: {
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     color: '#6B7280',
-    marginTop: 4,
-    marginLeft: 4,
+    marginTop: responsiveSize(4),
+    marginLeft: responsiveSize(4),
   },
   // Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-    padding: 20,
+    padding: responsiveSize(20),
   },
   dropdownModal: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: responsiveSize(12),
     maxHeight: '80%',
     shadowColor: '#000',
     shadowOffset: {
@@ -1083,12 +1090,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: responsiveSize(16),
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
   dropdownTitle: {
-    fontSize: 18,
+    fontSize: responsiveSize(18),
     fontWeight: '600',
     color: '#374151',
   },
@@ -1096,44 +1103,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: responsiveSize(16),
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
   dropdownItemText: {
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     color: '#374151',
     flex: 1,
   },
   dropdownItemCode: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#6B7280',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   loadingContainer: {
-    padding: 40,
+    padding: responsiveSize(40),
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 8,
+    marginTop: responsiveSize(8),
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   emptyContainer: {
-    padding: 40,
+    padding: responsiveSize(40),
     alignItems: 'center',
   },
   emptyText: {
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     textAlign: 'center',
   },
   // Date Picker Styles
   datePickerModal: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    margin: 20,
+    borderRadius: responsiveSize(12),
+    padding: responsiveSize(20),
+    margin: responsiveSize(20),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -1147,51 +1154,51 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: responsiveSize(20),
   },
   datePickerTitle: {
-    fontSize: 18,
+    fontSize: responsiveSize(18),
     fontWeight: '600',
     color: '#374151',
   },
   dateInputContainer: {
-    marginBottom: 20,
+    marginBottom: responsiveSize(20),
   },
   dateLabel: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: responsiveSize(8),
   },
   dateInput: {
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(12),
+    fontSize: responsiveSize(16),
     backgroundColor: '#FFFFFF',
     color: '#374151',
   },
   dateHint: {
-    fontSize: 12,
+    fontSize: responsiveSize(12),
     color: '#6B7280',
-    marginTop: 4,
+    marginTop: responsiveSize(4),
   },
   ageText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#DC2626',
-    marginTop: 8,
+    marginTop: responsiveSize(8),
     fontWeight: '600',
   },
   datePickerButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: responsiveSize(12),
   },
   dateButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 8,
+    padding: responsiveSize(16),
+    borderRadius: responsiveSize(8),
     alignItems: 'center',
   },
   cancelButton: {
@@ -1204,40 +1211,40 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: '#374151',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
   },
   confirmButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
   },
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 24,
-    padding: 8,
+    marginBottom: responsiveSize(20),
+    padding: responsiveSize(8),
   },
   checkbox: {
-    width: 20,
-    height: 20,
+    width: responsiveSize(20),
+    height: responsiveSize(20),
     borderWidth: 2,
     borderColor: '#D1D5DB',
-    borderRadius: 4,
-    marginRight: 12,
+    borderRadius: responsiveSize(4),
+    marginRight: responsiveSize(12),
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 2,
+    marginTop: responsiveSize(2),
   },
   checkboxChecked: {
     backgroundColor: '#DC2626',
     borderColor: '#DC2626',
   },
   termsText: {
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     color: '#6B7280',
     flex: 1,
-    lineHeight: 20,
+    lineHeight: responsiveSize(20),
   },
   termsLink: {
     color: '#DC2626',
@@ -1248,18 +1255,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#DC2626',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: responsiveSize(8),
+    padding: responsiveSize(16),
+    marginBottom: responsiveSize(16),
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   signupButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: responsiveSize(16),
     fontWeight: '600',
-    marginLeft: 8,
+    marginLeft: responsiveSize(8),
   },
   linkContainer: {
     flexDirection: 'row',
@@ -1268,11 +1275,11 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: '#6B7280',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
   },
   link: {
     color: '#DC2626',
-    fontSize: 14,
+    fontSize: responsiveSize(14),
     fontWeight: '600',
   },
 });
