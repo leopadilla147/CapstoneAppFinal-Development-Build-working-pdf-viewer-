@@ -235,211 +235,216 @@ const ProfileScreen = ({ navigation, onLogout }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#dc3545" />
-      
-      {/* Responsive Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-          <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
-        </TouchableOpacity>
-        
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../assets/logo-small.png')} 
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>Profile</Text>
-        </View>
-        
-        <View style={styles.headerSpacer} />
-      </View>
-
-      {/* Mobile Navigation Menu Modal */}
-      <Modal
-        visible={isMenuVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={toggleMenu}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground 
+        source={require('../assets/origbg1.png')} 
+        style={styles.backgroundImage}
+        resizeMode="cover"
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={toggleMenu}
+        {/* Responsive Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+            <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
+          </TouchableOpacity>
+          
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../assets/logo-small.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.headerTitle}>Profile</Text>
+          </View>
+          
+          <View style={styles.headerSpacer} />
+        </View>
+
+        {/* Mobile Navigation Menu Modal */}
+        <Modal
+          visible={isMenuVisible}
+          transparent={true}
+          animationType="none"
+          onRequestClose={toggleMenu}
         >
-          <Animated.View 
-            style={[
-              styles.mobileMenu,
-              {
-                transform: [{ translateX: slideAnim }]
-              }
-            ]}
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={toggleMenu}
           >
-            <View style={styles.menuHeader}>
-              <Image 
-                source={require('../assets/logo-small.png')} 
-                style={styles.menuLogo}
-                resizeMode="contain"
-              />
-              <Text style={styles.menuTitle}>Thesis Guard</Text>
-              <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
-                <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
+            <Animated.View 
+              style={[
+                styles.mobileMenu,
+                {
+                  transform: [{ translateX: slideAnim }]
+                }
+              ]}
+            >
+              <View style={styles.menuHeader}>
+                <Image 
+                  source={require('../assets/logo-small.png')} 
+                  style={styles.menuLogo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.menuTitle}>Thesis Guard</Text>
+                <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
+                  <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
 
-            {/* User Info in Side Navigation */}
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{displayName}</Text>
-              <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
-              {studentInfo && (
-                <>
-                  <Text style={styles.userDetail}>Department: {displayCollege}</Text>
-                  <Text style={styles.userDetail}>Course: {displayCourse}</Text>
-                </>
-              )}
-            </View>
+              {/* User Info in Side Navigation */}
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{displayName}</Text>
+                <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
+                {studentInfo && (
+                  <>
+                    <Text style={styles.userDetail}>Department: {displayCollege}</Text>
+                    <Text style={styles.userDetail}>Course: {displayCourse}</Text>
+                  </>
+                )}
+              </View>
 
-            <View style={styles.menuItems}>
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('Home')}
-              >
-                <Icon name="home" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Home</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.activeMenuItem]}
-                onPress={() => handleNavigation('Profile')}
-              >
-                <Icon name="account" size={responsiveSize(20)} color="#dc3545" />
-                <Text style={[styles.menuItemText, styles.activeMenuItemText]}>Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('AccountSettings')}
-              >
-                <Icon name="cog" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Account Settings</Text>
-              </TouchableOpacity>
-
-              {userRole === 'admin' && (
+              <View style={styles.menuItems}>
                 <TouchableOpacity 
                   style={styles.menuItem}
-                  onPress={() => handleNavigation('AdminDashboard')}
+                  onPress={() => handleNavigation('Home')}
                 >
-                  <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
-                  <Text style={styles.menuItemText}>Admin Dashboard</Text>
+                  <Icon name="home" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Home</Text>
                 </TouchableOpacity>
-              )}
 
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.logoutButton]}
-                onPress={handleLogout}
-              >
-                <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
-                <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </TouchableOpacity>
-      </Modal>
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.activeMenuItem]}
+                  onPress={() => handleNavigation('Profile')}
+                >
+                  <Icon name="account" size={responsiveSize(20)} color="#dc3545" />
+                  <Text style={[styles.menuItemText, styles.activeMenuItemText]}>Profile</Text>
+                </TouchableOpacity>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Profile Header Section */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
-              </Text>
-            </View>
-          </View>
-          
-          <Text style={styles.userName}>{displayName}</Text>
-          <Text style={styles.college}>{displayCollege}</Text>
-          <Text style={styles.course}>{displayCourse}</Text>
-          {displayYearLevel ? (
-            <Text style={styles.yearLevel}>Year {displayYearLevel}</Text>
-          ) : null}
-          <Text style={styles.studentId}>Student ID: {studentId}</Text>
-        </View>
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('AccountSettings')}
+                >
+                  <Icon name="cog" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Account Settings</Text>
+                </TouchableOpacity>
 
-        {/* Quick Actions */}
-        <View style={styles.actionsCard}>
-          <Text style={styles.cardTitle}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('QRScanner')}
-            >
-              <Icon name="qrcode-scan" size={responsiveSize(24)} color="#dc3545" />
-              <Text style={styles.actionText}>Scan QR</Text>
-            </TouchableOpacity>
+                {userRole === 'admin' && (
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => handleNavigation('AdminDashboard')}
+                  >
+                    <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
+                    <Text style={styles.menuItemText}>Admin Dashboard</Text>
+                  </TouchableOpacity>
+                )}
 
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('AccountSettings')}
-            >
-              <Icon name="account-edit" size={responsiveSize(24)} color="#dc3545" />
-              <Text style={styles.actionText}>Edit Profile</Text>
-            </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.logoutButton]}
+                  onPress={handleLogout}
+                >
+                  <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
+                  <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </TouchableOpacity>
+        </Modal>
 
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('Home')}
-            >
-              <Icon name="home" size={responsiveSize(24)} color="#dc3545" />
-              <Text style={styles.actionText}>Home</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Profile Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.papersViewed}</Text>
-            <Text style={styles.statLabel}>Papers Viewed</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.accessRequests}</Text>
-            <Text style={styles.statLabel}>Access Requests</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.bookshelfLogs}</Text>
-            <Text style={styles.statLabel}>Bookshelf Logs</Text>
-          </View>
-        </View>
-
-        {/* Recent Activities Section */}
-        <View style={styles.recentActivities}>
-          <Text style={styles.sectionTitle}>Recent Activities</Text>
-          
-          {recentActivities.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Icon name="history" size={responsiveSize(40)} color="#999" />
-              <Text style={styles.emptyStateText}>No recent activities</Text>
-              <Text style={styles.emptyStateSubtext}>Your thesis interactions will appear here</Text>
-            </View>
-          ) : (
-            recentActivities.map((activity) => (
-              <View key={activity.id} style={styles.activityCard}>
-                <View style={styles.activityHeader}>
-                  <Text style={styles.activityAction}>{activity.action}</Text>
-                  <View style={styles.activityTime}>
-                    <Text style={styles.timeText}>{activity.time}</Text>
-                    <Text style={styles.dateText}>{activity.date}</Text>
-                  </View>
-                </View>
-                <Text style={styles.activityThesis} numberOfLines={2}>
-                  {activity.thesisTitle}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Profile Header Section */}
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>
+                  {displayName.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                 </Text>
               </View>
-            ))
-          )}
-        </View>
-      </ScrollView>
+            </View>
+            
+            <Text style={styles.userName}>{displayName}</Text>
+            <Text style={styles.college}>{displayCollege}</Text>
+            <Text style={styles.course}>{displayCourse}</Text>
+            {displayYearLevel ? (
+              <Text style={styles.yearLevel}>Year {displayYearLevel}</Text>
+            ) : null}
+            <Text style={styles.studentId}>Student ID: {studentId}</Text>
+          </View>
+
+          {/* Quick Actions */}
+          <View style={styles.actionsCard}>
+            <Text style={styles.cardTitle}>Quick Actions</Text>
+            <View style={styles.actionsGrid}>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => navigation.navigate('QRScanner')}
+              >
+                <Icon name="qrcode-scan" size={responsiveSize(24)} color="#dc3545" />
+                <Text style={styles.actionText}>Scan QR</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => navigation.navigate('AccountSettings')}
+              >
+                <Icon name="account-edit" size={responsiveSize(24)} color="#dc3545" />
+                <Text style={styles.actionText}>Edit Profile</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => navigation.navigate('Home')}
+              >
+                <Icon name="home" size={responsiveSize(24)} color="#dc3545" />
+                <Text style={styles.actionText}>Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Profile Stats */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.papersViewed}</Text>
+              <Text style={styles.statLabel}>Papers Viewed</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.accessRequests}</Text>
+              <Text style={styles.statLabel}>Access Requests</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.bookshelfLogs}</Text>
+              <Text style={styles.statLabel}>Bookshelf Logs</Text>
+            </View>
+          </View>
+
+          {/* Recent Activities Section */}
+          <View style={styles.recentActivities}>
+            <Text style={styles.sectionTitle}>Recent Activities</Text>
+            
+            {recentActivities.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Icon name="history" size={responsiveSize(40)} color="#999" />
+                <Text style={styles.emptyStateText}>No recent activities</Text>
+                <Text style={styles.emptyStateSubtext}>Your thesis interactions will appear here</Text>
+              </View>
+            ) : (
+              recentActivities.map((activity) => (
+                <View key={activity.id} style={styles.activityCard}>
+                  <View style={styles.activityHeader}>
+                    <Text style={styles.activityAction}>{activity.action}</Text>
+                    <View style={styles.activityTime}>
+                      <Text style={styles.timeText}>{activity.time}</Text>
+                      <Text style={styles.dateText}>{activity.date}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.activityThesis} numberOfLines={2}>
+                    {activity.thesisTitle}
+                  </Text>
+                </View>
+              ))
+            )}
+          </View>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -447,7 +452,12 @@ const ProfileScreen = ({ navigation, onLogout }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -564,21 +574,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: responsiveSize(16),
+    backgroundColor: 'transparent',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
   loadingText: {
-    color: '#666',
+    color: '#FFFFFF',
     fontSize: responsiveSize(16),
     marginTop: responsiveSize(16),
   },
   profileHeader: {
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: responsiveSize(20),
     borderRadius: responsiveSize(12),
     marginBottom: responsiveSize(16),
@@ -642,7 +653,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionsCard: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: responsiveSize(16),
     borderRadius: responsiveSize(12),
     marginBottom: responsiveSize(16),
@@ -677,7 +688,7 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: responsiveSize(16),
     borderRadius: responsiveSize(12),
     marginBottom: responsiveSize(16),
@@ -705,7 +716,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   recentActivities: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: responsiveSize(16),
     borderRadius: responsiveSize(12),
     marginBottom: responsiveSize(16),

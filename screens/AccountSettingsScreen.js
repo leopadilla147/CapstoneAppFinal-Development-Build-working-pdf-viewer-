@@ -409,475 +409,480 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#dc3545" />
-      
-      {/* Responsive Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-          <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
-        </TouchableOpacity>
-        
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../assets/logo-small.png')} 
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>Account Settings</Text>
-        </View>
-        
-        <View style={styles.headerSpacer} />
-      </View>
-
-      {/* Mobile Navigation Menu Modal */}
-      <Modal
-        visible={isMenuVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={toggleMenu}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground 
+        source={require('../assets/origbg1.png')} 
+        style={styles.backgroundImage}
+        resizeMode="cover"
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={toggleMenu}
-        >
-          <Animated.View 
-            style={[
-              styles.mobileMenu,
-              {
-                transform: [{ translateX: slideAnim }]
-              }
-            ]}
-          >
-            <View style={styles.menuHeader}>
-              <Image 
-                source={require('../assets/logo-small.png')} 
-                style={styles.menuLogo}
-                resizeMode="contain"
-              />
-              <Text style={styles.menuTitle}>Thesis Guard</Text>
-              <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
-                <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-
-            {/* User Info in Side Navigation */}
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{displayName}</Text>
-              <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
-              {studentInfo && (
-                <>
-                  <Text style={styles.userDetail}>Department: {displayCollege}</Text>
-                  <Text style={styles.userDetail}>Course: {displayCourse}</Text>
-                </>
-              )}
-            </View>
-
-            <View style={styles.menuItems}>
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('Home')}
-              >
-                <Icon name="home" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Home</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('Profile')}
-              >
-                <Icon name="account" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.activeMenuItem]}
-                onPress={() => handleNavigation('AccountSettings')}
-              >
-                <Icon name="cog" size={responsiveSize(20)} color="#dc3545" />
-                <Text style={[styles.menuItemText, styles.activeMenuItemText]}>Account Settings</Text>
-              </TouchableOpacity>
-
-              {userRole === 'admin' && (
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => handleNavigation('AdminDashboard')}
-                >
-                  <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
-                  <Text style={styles.menuItemText}>Admin Dashboard</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.logoutButton]}
-                onPress={handleLogout}
-              >
-                <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
-                <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </TouchableOpacity>
-      </Modal>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {error ? (
-          <View style={styles.errorContainer}>
-            <Icon name="alert-octagon" size={responsiveSize(20)} color="#DC2626" style={styles.errorIcon} />
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
-
-        {saved && (
-          <View style={styles.successContainer}>
-            <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
-            <Text style={styles.successText}>✓ Profile updated successfully!</Text>
-          </View>
-        )}
-
-        {passwordSaved && (
-          <View style={styles.successContainer}>
-            <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
-            <Text style={styles.successText}>✓ Password updated successfully!</Text>
-          </View>
-        )}
-
-        {/* Personal Information */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Icon name="account" size={responsiveSize(20)} color="#dc3545" />
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+        {/* Responsive Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+            <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
+          </TouchableOpacity>
+          
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../assets/logo-small.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.headerTitle}>Account Settings</Text>
           </View>
           
-          <View style={styles.formGrid}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Username *</Text>
-              <View style={styles.inputWrapper}>
-                <Icon name="account" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                <TextInput
-                  style={[
-                    styles.input,
-                    !usernameAvailable && formData.username !== userDetails?.username && styles.inputError
-                  ]}
-                  value={formData.username}
-                  onChangeText={(value) => handleInputChange('username', value)}
-                  placeholder="Choose a username"
-                  placeholderTextColor="#9CA3AF"
-                />
-              </View>
-              {checkingUsername && (
-                <Text style={styles.helperText}>Checking username availability...</Text>
-              )}
-              {!usernameAvailable && formData.username !== userDetails?.username && (
-                <Text style={styles.errorHelperText}>Username is already taken</Text>
-              )}
-              {usernameAvailable && formData.username && formData.username !== userDetails?.username && (
-                <Text style={styles.successHelperText}>Username is available</Text>
-              )}
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Full Name *</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.full_name}
-                onChangeText={(value) => handleInputChange('full_name', value)}
-                placeholder="Enter your full name"
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email Address *</Text>
-              <View style={styles.inputWrapper}>
-                <Icon name="email" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  value={formData.email}
-                  onChangeText={(value) => handleInputChange('email', value)}
-                  placeholder="your.email@example.com"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Phone Number</Text>
-              <View style={styles.inputWrapper}>
-                <Icon name="phone" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  value={formData.phone}
-                  onChangeText={(value) => handleInputChange('phone', value)}
-                  placeholder="+63 912 345 6789"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="phone-pad"
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Birthdate</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.birthdate}
-                onChangeText={(value) => handleInputChange('birthdate', value)}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
-
-            {studentInfo && (
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Student ID</Text>
-                <TextInput
-                  style={[styles.input, styles.disabledInput]}
-                  value={studentInfo.student_id?.toString() || ''}
-                  editable={false}
-                  placeholderTextColor="#9CA3AF"
-                />
-                <Text style={styles.helperText}>Student ID cannot be changed</Text>
-              </View>
-            )}
-          </View>
+          <View style={styles.headerSpacer} />
         </View>
 
-        {/* Academic Information - Only for Students */}
-        {studentInfo && (
+        {/* Mobile Navigation Menu Modal */}
+        <Modal
+          visible={isMenuVisible}
+          transparent={true}
+          animationType="none"
+          onRequestClose={toggleMenu}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={toggleMenu}
+          >
+            <Animated.View 
+              style={[
+                styles.mobileMenu,
+                {
+                  transform: [{ translateX: slideAnim }]
+                }
+              ]}
+            >
+              <View style={styles.menuHeader}>
+                <Image 
+                  source={require('../assets/logo-small.png')} 
+                  style={styles.menuLogo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.menuTitle}>Thesis Guard</Text>
+                <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
+                  <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+
+              {/* User Info in Side Navigation */}
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{displayName}</Text>
+                <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
+                {studentInfo && (
+                  <>
+                    <Text style={styles.userDetail}>Department: {displayCollege}</Text>
+                    <Text style={styles.userDetail}>Course: {displayCourse}</Text>
+                  </>
+                )}
+              </View>
+
+              <View style={styles.menuItems}>
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('Home')}
+                >
+                  <Icon name="home" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Home</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('Profile')}
+                >
+                  <Icon name="account" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Profile</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.activeMenuItem]}
+                  onPress={() => handleNavigation('AccountSettings')}
+                >
+                  <Icon name="cog" size={responsiveSize(20)} color="#dc3545" />
+                  <Text style={[styles.menuItemText, styles.activeMenuItemText]}>Account Settings</Text>
+                </TouchableOpacity>
+
+                {userRole === 'admin' && (
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => handleNavigation('AdminDashboard')}
+                  >
+                    <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
+                    <Text style={styles.menuItemText}>Admin Dashboard</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.logoutButton]}
+                  onPress={handleLogout}
+                >
+                  <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
+                  <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </TouchableOpacity>
+        </Modal>
+
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Icon name="alert-octagon" size={responsiveSize(20)} color="#DC2626" style={styles.errorIcon} />
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
+
+          {saved && (
+            <View style={styles.successContainer}>
+              <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
+              <Text style={styles.successText}>✓ Profile updated successfully!</Text>
+            </View>
+          )}
+
+          {passwordSaved && (
+            <View style={styles.successContainer}>
+              <Icon name="check-circle" size={responsiveSize(20)} color="#166534" style={styles.successIcon} />
+              <Text style={styles.successText}>✓ Password updated successfully!</Text>
+            </View>
+          )}
+
+          {/* Personal Information */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Icon name="book-open" size={responsiveSize(20)} color="#dc3545" />
-              <Text style={styles.sectionTitle}>Academic Information</Text>
-              <Text style={styles.sectionSubtitle}>(Contact your administrator to update academic information)</Text>
+              <Icon name="account" size={responsiveSize(20)} color="#dc3545" />
+              <Text style={styles.sectionTitle}>Personal Information</Text>
             </View>
             
             <View style={styles.formGrid}>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Year Level</Text>
-                <TextInput
-                  style={[styles.input, styles.disabledInput]}
-                  value={formData.year_level}
-                  editable={false}
-                  placeholderTextColor="#9CA3AF"
-                />
-                <Text style={styles.helperText}>Year level cannot be changed here</Text>
+                <Text style={styles.label}>Username *</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="account" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={[
+                      styles.input,
+                      !usernameAvailable && formData.username !== userDetails?.username && styles.inputError
+                    ]}
+                    value={formData.username}
+                    onChangeText={(value) => handleInputChange('username', value)}
+                    placeholder="Choose a username"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
+                {checkingUsername && (
+                  <Text style={styles.helperText}>Checking username availability...</Text>
+                )}
+                {!usernameAvailable && formData.username !== userDetails?.username && (
+                  <Text style={styles.errorHelperText}>Username is already taken</Text>
+                )}
+                {usernameAvailable && formData.username && formData.username !== userDetails?.username && (
+                  <Text style={styles.successHelperText}>Username is available</Text>
+                )}
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>College Department</Text>
+                <Text style={styles.label}>Full Name *</Text>
                 <TextInput
-                  style={[styles.input, styles.disabledInput]}
-                  value={formData.college_department}
-                  editable={false}
+                  style={styles.input}
+                  value={formData.full_name}
+                  onChangeText={(value) => handleInputChange('full_name', value)}
+                  placeholder="Enter your full name"
                   placeholderTextColor="#9CA3AF"
                 />
-                <Text style={styles.helperText}>College department cannot be changed here</Text>
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Course/Program</Text>
+                <Text style={styles.label}>Email Address *</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="email" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    value={formData.email}
+                    onChangeText={(value) => handleInputChange('email', value)}
+                    placeholder="your.email@example.com"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Phone Number</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="phone" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    value={formData.phone}
+                    onChangeText={(value) => handleInputChange('phone', value)}
+                    placeholder="+63 912 345 6789"
+                    placeholderTextColor="#9CA3AF"
+                    keyboardType="phone-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Birthdate</Text>
                 <TextInput
-                  style={[styles.input, styles.disabledInput]}
-                  value={formData.course}
-                  editable={false}
+                  style={styles.input}
+                  value={formData.birthdate}
+                  onChangeText={(value) => handleInputChange('birthdate', value)}
+                  placeholder="YYYY-MM-DD"
                   placeholderTextColor="#9CA3AF"
                 />
-                <Text style={styles.helperText}>Course cannot be changed here</Text>
               </View>
+
+              {studentInfo && (
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Student ID</Text>
+                  <TextInput
+                    style={[styles.input, styles.disabledInput]}
+                    value={studentInfo.student_id?.toString() || ''}
+                    editable={false}
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  <Text style={styles.helperText}>Student ID cannot be changed</Text>
+                </View>
+              )}
             </View>
           </View>
-        )}
 
-        {/* Preferences */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Icon name="bell" size={responsiveSize(20)} color="#dc3545" />
-            <Text style={styles.sectionTitle}>Preferences</Text>
-          </View>
-          
-          <View style={styles.preferencesContainer}>
-            <TouchableOpacity 
-              style={styles.preferenceItem}
-              onPress={() => handlePreferenceChange('email_notifications')}
-            >
-              <View style={[
-                styles.checkbox,
-                preferences.email_notifications && styles.checkboxChecked
-              ]}>
-                {preferences.email_notifications && (
-                  <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                )}
+          {/* Academic Information - Only for Students */}
+          {studentInfo && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Icon name="book-open" size={responsiveSize(20)} color="#dc3545" />
+                <Text style={styles.sectionTitle}>Academic Information</Text>
+                <Text style={styles.sectionSubtitle}>(Contact your administrator to update academic information)</Text>
               </View>
-              <Text style={styles.preferenceText}>Email notifications for request updates</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.preferenceItem}
-              onPress={() => handlePreferenceChange('weekly_recommendations')}
-            >
-              <View style={[
-                styles.checkbox,
-                preferences.weekly_recommendations && styles.checkboxChecked
-              ]}>
-                {preferences.weekly_recommendations && (
-                  <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                )}
-              </View>
-              <Text style={styles.preferenceText}>Weekly research recommendations</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.preferenceItem}
-              onPress={() => handlePreferenceChange('thesis_reminders')}
-            >
-              <View style={[
-                styles.checkbox,
-                preferences.thesis_reminders && styles.checkboxChecked
-              ]}>
-                {preferences.thesis_reminders && (
-                  <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                )}
-              </View>
-              <Text style={styles.preferenceText}>Thesis access reminders</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Security */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Icon name="shield-account" size={responsiveSize(20)} color="#dc3545" />
-            <Text style={styles.sectionTitle}>Security</Text>
-          </View>
-          
-          <View style={styles.securityContainer}>
-            <TouchableOpacity 
-              style={styles.changePasswordButton}
-              onPress={() => setShowPasswordForm(!showPasswordForm)}
-            >
-              <Text style={styles.changePasswordText}>Change Password</Text>
-            </TouchableOpacity>
-
-            {showPasswordForm && (
-              <View style={styles.passwordForm}>
+              
+              <View style={styles.formGrid}>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Current Password</Text>
-                  <View style={styles.inputWrapper}>
-                    <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      value={passwordData.currentPassword}
-                      onChangeText={(value) => handlePasswordChange('currentPassword', value)}
-                      placeholder="Enter current password"
-                      placeholderTextColor="#9CA3AF"
-                      secureTextEntry={!showCurrentPassword}
-                    />
-                    <TouchableOpacity
-                      onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-                      style={styles.eyeButton}
-                    >
-                      <Icon 
-                        name={showCurrentPassword ? "eye-off" : "eye"} 
-                        size={responsiveSize(20)} 
-                        color="#9CA3AF" 
-                      />
-                    </TouchableOpacity>
-                  </View>
+                  <Text style={styles.label}>Year Level</Text>
+                  <TextInput
+                    style={[styles.input, styles.disabledInput]}
+                    value={formData.year_level}
+                    editable={false}
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  <Text style={styles.helperText}>Year level cannot be changed here</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>New Password</Text>
-                  <View style={styles.inputWrapper}>
-                    <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      value={passwordData.newPassword}
-                      onChangeText={(value) => handlePasswordChange('newPassword', value)}
-                      placeholder="Enter new password"
-                      placeholderTextColor="#9CA3AF"
-                      secureTextEntry={!showNewPassword}
-                    />
-                    <TouchableOpacity
-                      onPress={() => setShowNewPassword(!showNewPassword)}
-                      style={styles.eyeButton}
-                    >
-                      <Icon 
-                        name={showNewPassword ? "eye-off" : "eye"} 
-                        size={responsiveSize(20)} 
-                        color="#9CA3AF" 
-                      />
-                    </TouchableOpacity>
-                  </View>
+                  <Text style={styles.label}>College Department</Text>
+                  <TextInput
+                    style={[styles.input, styles.disabledInput]}
+                    value={formData.college_department}
+                    editable={false}
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  <Text style={styles.helperText}>College department cannot be changed here</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Confirm New Password</Text>
-                  <View style={styles.inputWrapper}>
-                    <Icon name="lock-check" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.input}
-                      value={passwordData.confirmPassword}
-                      onChangeText={(value) => handlePasswordChange('confirmPassword', value)}
-                      placeholder="Confirm new password"
-                      placeholderTextColor="#9CA3AF"
-                      secureTextEntry={!showConfirmPassword}
-                    />
-                    <TouchableOpacity
-                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                      style={styles.eyeButton}
-                    >
-                      <Icon 
-                        name={showConfirmPassword ? "eye-off" : "eye"} 
-                        size={responsiveSize(20)} 
-                        color="#9CA3AF" 
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                <View style={styles.passwordActions}>
-                  <TouchableOpacity 
-                    style={styles.updatePasswordButton}
-                    onPress={handlePasswordUpdate}
-                  >
-                    <Text style={styles.updatePasswordText}>Update Password</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.cancelPasswordButton}
-                    onPress={() => setShowPasswordForm(false)}
-                  >
-                    <Text style={styles.cancelPasswordText}>Cancel</Text>
-                  </TouchableOpacity>
+                  <Text style={styles.label}>Course/Program</Text>
+                  <TextInput
+                    style={[styles.input, styles.disabledInput]}
+                    value={formData.course}
+                    editable={false}
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  <Text style={styles.helperText}>Course cannot be changed here</Text>
                 </View>
               </View>
-            )}
-
-            <View style={styles.accountInfo}>
-              <Text style={styles.accountInfoText}>
-                Account created: {userDetails?.created_at ? new Date(userDetails.created_at).toLocaleDateString() : 'N/A'}
-              </Text>
             </View>
-          </View>
-        </View>
-
-        {/* Save Button */}
-        <TouchableOpacity
-          style={[styles.saveButton, (saving || !usernameAvailable || checkingUsername) && styles.buttonDisabled]}
-          onPress={handleSave}
-          disabled={saving || !usernameAvailable || checkingUsername}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Icon name="content-save" size={responsiveSize(20)} color="#FFFFFF" />
           )}
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+
+          {/* Preferences */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Icon name="bell" size={responsiveSize(20)} color="#dc3545" />
+              <Text style={styles.sectionTitle}>Preferences</Text>
+            </View>
+            
+            <View style={styles.preferencesContainer}>
+              <TouchableOpacity 
+                style={styles.preferenceItem}
+                onPress={() => handlePreferenceChange('email_notifications')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  preferences.email_notifications && styles.checkboxChecked
+                ]}>
+                  {preferences.email_notifications && (
+                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
+                  )}
+                </View>
+                <Text style={styles.preferenceText}>Email notifications for request updates</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.preferenceItem}
+                onPress={() => handlePreferenceChange('weekly_recommendations')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  preferences.weekly_recommendations && styles.checkboxChecked
+                ]}>
+                  {preferences.weekly_recommendations && (
+                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
+                  )}
+                </View>
+                <Text style={styles.preferenceText}>Weekly research recommendations</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.preferenceItem}
+                onPress={() => handlePreferenceChange('thesis_reminders')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  preferences.thesis_reminders && styles.checkboxChecked
+                ]}>
+                  {preferences.thesis_reminders && (
+                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
+                  )}
+                </View>
+                <Text style={styles.preferenceText}>Thesis access reminders</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Security */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Icon name="shield-account" size={responsiveSize(20)} color="#dc3545" />
+              <Text style={styles.sectionTitle}>Security</Text>
+            </View>
+            
+            <View style={styles.securityContainer}>
+              <TouchableOpacity 
+                style={styles.changePasswordButton}
+                onPress={() => setShowPasswordForm(!showPasswordForm)}
+              >
+                <Text style={styles.changePasswordText}>Change Password</Text>
+              </TouchableOpacity>
+
+              {showPasswordForm && (
+                <View style={styles.passwordForm}>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Current Password</Text>
+                    <View style={styles.inputWrapper}>
+                      <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        value={passwordData.currentPassword}
+                        onChangeText={(value) => handlePasswordChange('currentPassword', value)}
+                        placeholder="Enter current password"
+                        placeholderTextColor="#9CA3AF"
+                        secureTextEntry={!showCurrentPassword}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                        style={styles.eyeButton}
+                      >
+                        <Icon 
+                          name={showCurrentPassword ? "eye-off" : "eye"} 
+                          size={responsiveSize(20)} 
+                          color="#9CA3AF" 
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.label}>New Password</Text>
+                    <View style={styles.inputWrapper}>
+                      <Icon name="lock" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        value={passwordData.newPassword}
+                        onChangeText={(value) => handlePasswordChange('newPassword', value)}
+                        placeholder="Enter new password"
+                        placeholderTextColor="#9CA3AF"
+                        secureTextEntry={!showNewPassword}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setShowNewPassword(!showNewPassword)}
+                        style={styles.eyeButton}
+                      >
+                        <Icon 
+                          name={showNewPassword ? "eye-off" : "eye"} 
+                          size={responsiveSize(20)} 
+                          color="#9CA3AF" 
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Confirm New Password</Text>
+                    <View style={styles.inputWrapper}>
+                      <Icon name="lock-check" size={responsiveSize(20)} color="#9CA3AF" style={styles.inputIcon} />
+                      <TextInput
+                        style={styles.input}
+                        value={passwordData.confirmPassword}
+                        onChangeText={(value) => handlePasswordChange('confirmPassword', value)}
+                        placeholder="Confirm new password"
+                        placeholderTextColor="#9CA3AF"
+                        secureTextEntry={!showConfirmPassword}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                        style={styles.eyeButton}
+                      >
+                        <Icon 
+                          name={showConfirmPassword ? "eye-off" : "eye"} 
+                          size={responsiveSize(20)} 
+                          color="#9CA3AF" 
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={styles.passwordActions}>
+                    <TouchableOpacity 
+                      style={styles.updatePasswordButton}
+                      onPress={handlePasswordUpdate}
+                    >
+                      <Text style={styles.updatePasswordText}>Update Password</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.cancelPasswordButton}
+                      onPress={() => setShowPasswordForm(false)}
+                    >
+                      <Text style={styles.cancelPasswordText}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.accountInfo}>
+                <Text style={styles.accountInfoText}>
+                  Account created: {userDetails?.created_at ? new Date(userDetails.created_at).toLocaleDateString() : 'N/A'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Save Button */}
+          <TouchableOpacity
+            style={[styles.saveButton, (saving || !usernameAvailable || checkingUsername) && styles.buttonDisabled]}
+            onPress={handleSave}
+            disabled={saving || !usernameAvailable || checkingUsername}
+          >
+            {saving ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Icon name="content-save" size={responsiveSize(20)} color="#FFFFFF" />
+            )}
+            <Text style={styles.saveButtonText}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -885,7 +890,12 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -1005,22 +1015,23 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: responsiveSize(16),
+    backgroundColor: 'transparent',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
   loadingText: {
-    color: '#666',
+    color: '#FFFFFF',
     fontSize: responsiveSize(16),
     marginTop: responsiveSize(16),
   },
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: 'rgba(254, 242, 242, 0.9)',
     borderWidth: 1,
     borderColor: '#FECACA',
     borderRadius: responsiveSize(8),
@@ -1038,7 +1049,7 @@ const styles = StyleSheet.create({
   successContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0FDF4',
+    backgroundColor: 'rgba(240, 253, 244, 0.9)',
     borderWidth: 1,
     borderColor: '#BBF7D0',
     borderRadius: responsiveSize(8),
@@ -1054,7 +1065,7 @@ const styles = StyleSheet.create({
     fontSize: responsiveSize(14),
   },
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: responsiveSize(12),
     padding: responsiveSize(16),
     marginBottom: responsiveSize(16),
@@ -1187,7 +1198,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   passwordForm: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: 'rgba(248, 249, 250, 0.9)',
     borderRadius: responsiveSize(8),
     padding: responsiveSize(16),
     gap: responsiveSize(16),

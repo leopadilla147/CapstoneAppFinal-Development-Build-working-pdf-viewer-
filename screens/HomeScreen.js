@@ -159,221 +159,226 @@ const HomeScreen = ({ navigation, onLogout }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#dc3545" />
-      
-      {/* Responsive Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-          <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
-        </TouchableOpacity>
-        
-        <View style={styles.logoContainer}>
-          <Image 
-            source={require('../assets/logo-small.png')} 
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <Text style={styles.headerTitle}>Thesis Guard</Text>
-        </View>
-        
-        <View style={styles.headerSpacer} />
-      </View>
-
-      {/* Mobile Navigation Menu Modal */}
-      <Modal
-        visible={isMenuVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={toggleMenu}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground 
+        source={require('../assets/origbg1.png')} 
+        style={styles.backgroundImage}
+        resizeMode="cover"
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={toggleMenu}
-        >
-          <Animated.View 
-            style={[
-              styles.mobileMenu,
-              {
-                transform: [{ translateX: slideAnim }]
-              }
-            ]}
-          >
-            <View style={styles.menuHeader}>
-              <Image 
-                source={require('../assets/logo-small.png')} 
-                style={styles.menuLogo}
-                resizeMode="contain"
-              />
-              <Text style={styles.menuTitle}>Thesis Guard</Text>
-              <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
-                <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{currentUser?.full_name || 'User'}</Text>
-              <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
-            </View>
-
-            <View style={styles.menuItems}>
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('Home')}
-              >
-                <Icon name="home" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Home</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('Profile')}
-              >
-                <Icon name="account" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={() => handleNavigation('AccountSettings')}
-              >
-                <Icon name="cog" size={responsiveSize(20)} color="#333" />
-                <Text style={styles.menuItemText}>Account Settings</Text>
-              </TouchableOpacity>
-
-              {userRole === 'admin' && (
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => handleNavigation('AdminDashboard')}
-                >
-                  <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
-                  <Text style={styles.menuItemText}>Admin Dashboard</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity 
-                style={[styles.menuItem, styles.logoutButton]}
-                onPress={handleLogout}
-              >
-                <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
-                <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* Main Content */}
-      <ScrollView 
-        style={styles.mainContent} 
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>Welcome back,</Text>
-          <Text style={styles.userName}>{currentUser?.full_name || 'Student'}</Text>
-          <Text style={styles.welcomeSubtitle}>
-            {userRole === 'admin' 
-              ? 'Manage theses and user access requests' 
-              : 'Access research papers and scan QR codes'
-            }
-          </Text>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('QRScanner')}
-          >
-            <View style={styles.actionIconContainer}>
-              <Icon name="qrcode-scan" size={responsiveSize(24)} color="#dc3545" />
-            </View>
-            <Text style={styles.actionText}>Scan QR</Text>
+        {/* Responsive Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+            <Icon name="menu" size={responsiveSize(24)} color="#FFFFFF" />
           </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('Profile')}
-          >
-            <View style={styles.actionIconContainer}>
-              <Icon name="account" size={responsiveSize(24)} color="#dc3545" />
-            </View>
-            <Text style={styles.actionText}>Profile</Text>
-          </TouchableOpacity>
-
-          {userRole === 'admin' && (
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('AdminDashboard')}
-            >
-              <View style={styles.actionIconContainer}>
-                <Icon name="shield-account" size={responsiveSize(24)} color="#dc3545" />
-              </View>
-              <Text style={styles.actionText}>Admin</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Recent Theses Section */}
-        <View style={styles.recentSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.recentTitle}>Recently Accessed</Text>
+          
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../assets/logo-small.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.headerTitle}>Thesis Guard</Text>
           </View>
           
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#dc3545" />
-              <Text style={styles.loadingText}>Loading recent theses...</Text>
-            </View>
-          ) : (
-            <View style={styles.recentList}>
-              {recentTheses.length === 0 ? (
-                <View style={styles.emptyState}>
-                  <Icon name="book-open" size={responsiveSize(40)} color="#999" />
-                  <Text style={styles.emptyStateText}>No recent theses</Text>
-                  <Text style={styles.emptyStateSubtext}>
-                    {userRole === 'admin' 
-                      ? 'Start managing theses from admin dashboard' 
-                      : 'Scan QR codes to access theses'
-                    }
-                  </Text>
-                </View>
-              ) : (
-                recentTheses.map((thesis, index) => (
-                  <TouchableOpacity 
-                    key={thesis.thesis_id}
-                    style={styles.thesisItem}
-                    onPress={() => handleThesisPress(thesis)}
-                  >
-                    <View style={styles.thesisNumber}>
-                      <Text style={styles.thesisNumberText}>{index + 1}</Text>
-                    </View>
-                    <View style={styles.thesisContent}>
-                      <Text style={styles.thesisTitle} numberOfLines={2}>
-                        {thesis.title}
-                      </Text>
-                      <Text style={styles.thesisAuthor} numberOfLines={1}>
-                        by {thesis.author}
-                      </Text>
-                      <View style={styles.thesisMeta}>
-                        <Text style={styles.thesisDepartment}>{thesis.college_department}</Text>
-                        <Text style={styles.thesisDate}>{formatDate(thesis.created_at)}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.arrowContainer}>
-                      <Icon name="chevron-right" size={responsiveSize(20)} color="#dc3545" />
-                    </View>
-                  </TouchableOpacity>
-                ))
-              )}
-            </View>
-          )}
+          <View style={styles.headerSpacer} />
         </View>
-      </ScrollView>
+
+        {/* Mobile Navigation Menu Modal */}
+        <Modal
+          visible={isMenuVisible}
+          transparent={true}
+          animationType="none"
+          onRequestClose={toggleMenu}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={toggleMenu}
+          >
+            <Animated.View 
+              style={[
+                styles.mobileMenu,
+                {
+                  transform: [{ translateX: slideAnim }]
+                }
+              ]}
+            >
+              <View style={styles.menuHeader}>
+                <Image 
+                  source={require('../assets/logo-small.png')} 
+                  style={styles.menuLogo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.menuTitle}>Thesis Guard</Text>
+                <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
+                  <Icon name="close" size={responsiveSize(24)} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>{currentUser?.full_name || 'User'}</Text>
+                <Text style={styles.userRole}>{userRole === 'admin' ? 'Administrator' : 'Student'}</Text>
+              </View>
+
+              <View style={styles.menuItems}>
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('Home')}
+                >
+                  <Icon name="home" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Home</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('Profile')}
+                >
+                  <Icon name="account" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Profile</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => handleNavigation('AccountSettings')}
+                >
+                  <Icon name="cog" size={responsiveSize(20)} color="#333" />
+                  <Text style={styles.menuItemText}>Account Settings</Text>
+                </TouchableOpacity>
+
+                {userRole === 'admin' && (
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => handleNavigation('AdminDashboard')}
+                  >
+                    <Icon name="shield-account" size={responsiveSize(20)} color="#333" />
+                    <Text style={styles.menuItemText}>Admin Dashboard</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity 
+                  style={[styles.menuItem, styles.logoutButton]}
+                  onPress={handleLogout}
+                >
+                  <Icon name="logout" size={responsiveSize(20)} color="#FFFFFF" />
+                  <Text style={[styles.menuItemText, styles.logoutText]}>Log out</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </TouchableOpacity>
+        </Modal>
+
+        {/* Main Content */}
+        <ScrollView 
+          style={styles.mainContent} 
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <Text style={styles.welcomeText}>Welcome back,</Text>
+            <Text style={styles.userName}>{currentUser?.full_name || 'Student'}</Text>
+            <Text style={styles.welcomeSubtitle}>
+              {userRole === 'admin' 
+                ? 'Manage theses and user access requests' 
+                : 'Access research papers and scan QR codes'
+              }
+            </Text>
+          </View>
+
+          {/* Quick Actions */}
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('QRScanner')}
+            >
+              <View style={styles.actionIconContainer}>
+                <Icon name="qrcode-scan" size={responsiveSize(24)} color="#dc3545" />
+              </View>
+              <Text style={styles.actionText}>Scan QR</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('Profile')}
+            >
+              <View style={styles.actionIconContainer}>
+                <Icon name="account" size={responsiveSize(24)} color="#dc3545" />
+              </View>
+              <Text style={styles.actionText}>Profile</Text>
+            </TouchableOpacity>
+
+            {userRole === 'admin' && (
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => navigation.navigate('AdminDashboard')}
+              >
+                <View style={styles.actionIconContainer}>
+                  <Icon name="shield-account" size={responsiveSize(24)} color="#dc3545" />
+                </View>
+                <Text style={styles.actionText}>Admin</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Recent Theses Section */}
+          <View style={styles.recentSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.recentTitle}>Recently Accessed</Text>
+            </View>
+            
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#dc3545" />
+                <Text style={styles.loadingText}>Loading recent theses...</Text>
+              </View>
+            ) : (
+              <View style={styles.recentList}>
+                {recentTheses.length === 0 ? (
+                  <View style={styles.emptyState}>
+                    <Icon name="book-open" size={responsiveSize(40)} color="#999" />
+                    <Text style={styles.emptyStateText}>No recent theses</Text>
+                    <Text style={styles.emptyStateSubtext}>
+                      {userRole === 'admin' 
+                        ? 'Start managing theses from admin dashboard' 
+                        : 'Scan QR codes to access theses'
+                      }
+                    </Text>
+                  </View>
+                ) : (
+                  recentTheses.map((thesis, index) => (
+                    <TouchableOpacity 
+                      key={thesis.thesis_id}
+                      style={styles.thesisItem}
+                      onPress={() => handleThesisPress(thesis)}
+                    >
+                      <View style={styles.thesisNumber}>
+                        <Text style={styles.thesisNumberText}>{index + 1}</Text>
+                      </View>
+                      <View style={styles.thesisContent}>
+                        <Text style={styles.thesisTitle} numberOfLines={2}>
+                          {thesis.title}
+                        </Text>
+                        <Text style={styles.thesisAuthor} numberOfLines={1}>
+                          by {thesis.author}
+                        </Text>
+                        <View style={styles.thesisMeta}>
+                          <Text style={styles.thesisDepartment}>{thesis.college_department}</Text>
+                          <Text style={styles.thesisDate}>{formatDate(thesis.created_at)}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.arrowContainer}>
+                        <Icon name="chevron-right" size={responsiveSize(20)} color="#dc3545" />
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                )}
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -381,7 +386,12 @@ const HomeScreen = ({ navigation, onLogout }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -492,9 +502,10 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     padding: responsiveSize(16),
+    backgroundColor: 'transparent',
   },
   welcomeSection: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     padding: responsiveSize(20),
     borderRadius: responsiveSize(12),
     marginBottom: responsiveSize(20),
@@ -560,7 +571,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   recentSection: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: responsiveSize(12),
     padding: responsiveSize(16),
     shadowColor: '#000',
