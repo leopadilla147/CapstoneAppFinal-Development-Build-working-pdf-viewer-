@@ -501,7 +501,7 @@ const SignupScreen = ({ navigation }) => {
                             styles.dropdownButtonText,
                             !formData.birthdate && styles.placeholderText
                           ]}>
-                            {formData.birthdate ? formatDate(formData.birthdate) : 'Select your birthdate (Optional)'}
+                            {formData.birthdate ? formatDate(formData.birthdate) : 'Select your birthdate'}
                           </Text>
                           <Icon 
                             name="calendar" 

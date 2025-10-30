@@ -11,7 +11,8 @@ import {
   Modal,
   RefreshControl,
   Dimensions,
-  ImageBackground
+  ImageBackground,
+  Animated
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,12 +31,17 @@ const ViewingScreen = ({ navigation, route }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showZoomedQR, setShowZoomedQR] = useState(false);
   const [qrData, setQrData] = useState(null);
   const [thesisData, setThesisData] = useState(thesis);
   const [accessStatus, setAccessStatus] = useState('none');
   const [requestData, setRequestData] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Animation values
+  const [zoomAnim] = useState(new Animated.Value(1));
+  const [bgOpacity] = useState(new Animated.Value(0));
 
   useEffect(() => {
     loadUserData();
@@ -70,7 +76,7 @@ const ViewingScreen = ({ navigation, route }) => {
       if (userData) {
         const user = JSON.parse(userData);
         setCurrentUser(user);
-        debugUserData(user); // Add this line
+        debugUserData(user);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -86,7 +92,6 @@ const ViewingScreen = ({ navigation, route }) => {
     try {
       const thesisId = thesis.thesis_id || thesis.id;
       
-      // Validate user ID - check both possible field names
       const userId = currentUser.user_id || currentUser.id;
       
       if (!userId || !thesisId) {
@@ -192,7 +197,6 @@ const ViewingScreen = ({ navigation, route }) => {
 
     setLoading(true);
     try {
-      // Simple QR data - only thesis_id and user_id
       const userId = currentUser.user_id || currentUser.id;
       const simpleQRData = {
         thesis_id: thesisId,
@@ -210,6 +214,39 @@ const ViewingScreen = ({ navigation, route }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQRZoom = () => {
+    setShowZoomedQR(true);
+    // Animate background opacity
+    Animated.timing(bgOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    // Reduced scale for better fit on all screens
+    Animated.timing(zoomAnim, {
+      toValue: 1.2,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleQRZoomOut = () => {
+    // Animate background opacity
+    Animated.timing(bgOpacity, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+    // Animate QR code scale back to normal
+    Animated.timing(zoomAnim, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowZoomedQR(false);
+    });
   };
 
   // Safe data access with fallbacks
@@ -393,26 +430,22 @@ const ViewingScreen = ({ navigation, route }) => {
               <View style={styles.qrContainer}>
                 {qrData && (
                   <>
-                    <ScrollView 
-                      style={styles.qrScrollView}
-                      maximumZoomScale={3.0}
-                      minimumZoomScale={1.0}
-                      contentContainerStyle={styles.qrContentContainer}
+                    <TouchableOpacity 
+                      style={styles.qrTouchable}
+                      activeOpacity={0.8}
+                      onPress={handleQRZoom}
                     >
                       <QRCode
                         value={`${qrData.thesis_id}:${qrData.user_id}`}
-                        size={responsiveSize(280)} // Increased size for better zooming
+                        size={responsiveSize(200)} // Reduced size
                       />
-                    </ScrollView>
+                    </TouchableOpacity>
                     <Text style={styles.qrInstruction}>
-                      Present this QR code to the Smart Bookshelf camera
+                      Tap the QR code to zoom in
                     </Text>
                     <Text style={styles.qrDetails}>
                       Thesis: {getThesisTitle()}{'\n'}
                       User: {currentUser?.full_name || currentUser?.fullName || 'Unknown'}
-                    </Text>
-                    <Text style={styles.qrZoomHint}>
-                      Pinch to zoom QR code
                     </Text>
                   </>
                 )}
@@ -426,6 +459,46 @@ const ViewingScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             </View>
           </View>
+        </Modal>
+
+        {/* Zoomed QR Code Modal */}
+        <Modal
+          visible={showZoomedQR}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={handleQRZoomOut}
+        >
+          <Animated.View 
+            style={[
+              styles.zoomedModalOverlay,
+              { opacity: bgOpacity }
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.zoomedBackground}
+              activeOpacity={1}
+              onPress={handleQRZoomOut}
+            >
+              <View style={styles.zoomedContent}>
+                <Animated.View 
+                  style={[
+                    styles.zoomedQRContainer,
+                    { transform: [{ scale: zoomAnim }] }
+                  ]}
+                >
+                  {qrData && (
+                    <QRCode
+                      value={`${qrData.thesis_id}:${qrData.user_id}`}
+                      size={Math.min(width * 0.7, height * 0.5)} // Dynamic size based on screen
+                    />
+                  )}
+                </Animated.View>
+                <Text style={styles.zoomInstruction}>
+                  Tap anywhere to close
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
         </Modal>
       </ImageBackground>
     </SafeAreaView>
@@ -607,7 +680,7 @@ const styles = StyleSheet.create({
     padding: responsiveSize(20),
     width: '100%',
     maxWidth: responsiveSize(400),
-    maxHeight: '80%', // Limit modal height
+    maxHeight: '80%',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -627,16 +700,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: responsiveSize(16),
   },
-  qrScrollView: {
-    width: responsiveSize(300),
-    height: responsiveSize(300),
+  qrTouchable: {
+    padding: responsiveSize(15),
     backgroundColor: '#f8f9fa',
     borderRadius: responsiveSize(10),
-  },
-  qrContentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: responsiveSize(16),
   },
   qrInstruction: {
     fontSize: responsiveSize(16),
@@ -651,13 +719,6 @@ const styles = StyleSheet.create({
     marginTop: responsiveSize(8),
     textAlign: 'center',
     lineHeight: responsiveSize(20),
-  },
-  qrZoomHint: {
-    fontSize: responsiveSize(12),
-    color: '#999',
-    marginTop: responsiveSize(6),
-    fontStyle: 'italic',
-    textAlign: 'center',
   },
   doneButton: {
     backgroundColor: '#dc3545',
@@ -686,6 +747,45 @@ const styles = StyleSheet.create({
     fontSize: responsiveSize(12),
     color: '#6c757d',
     marginBottom: responsiveSize(4),
+  },
+  // Zoomed QR Modal Styles - FIXED
+  zoomedModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  zoomedBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  zoomedContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: responsiveSize(20),
+  },
+  zoomedQRContainer: {
+    backgroundColor: '#fff',
+    padding: responsiveSize(20),
+    borderRadius: responsiveSize(15),
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+    marginBottom: responsiveSize(20), // Added margin for the instruction text
+  },
+  zoomInstruction: {
+    fontSize: responsiveSize(16),
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '600',
+    marginTop: responsiveSize(20),
+    paddingHorizontal: responsiveSize(20),
   },
 });
 

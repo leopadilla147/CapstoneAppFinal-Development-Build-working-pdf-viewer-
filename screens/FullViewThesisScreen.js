@@ -41,11 +41,13 @@ const FullViewThesisScreen = ({ navigation, route }) => {
   const [pdfLoadError, setPdfLoadError] = useState(false);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
   const [pdfLoadingProgress, setPdfLoadingProgress] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [pdfKey, setPdfKey] = useState(0);
   
   const pdfRef = useRef(null);
   const appState = useRef(AppState.currentState);
+  const totalPagesRef = useRef(0); // Add this ref to preserve total pages
 
   useEffect(() => {
     loadUserData();
@@ -64,6 +66,11 @@ const FullViewThesisScreen = ({ navigation, route }) => {
       checkAccessStatus();
     }
   }, [currentUser]);
+
+  // Update the ref whenever totalPages changes
+  useEffect(() => {
+    totalPagesRef.current = totalPages;
+  }, [totalPages]);
 
   const getUserId = (user) => {
     if (!user) {
@@ -266,14 +273,18 @@ const FullViewThesisScreen = ({ navigation, route }) => {
   const handleClosePdfViewer = () => {
     setShowPdfViewer(false);
     setPdfUrl(null);
-    setCurrentPage(0);
+    setCurrentPage(1);
     setTotalPages(0);
+    totalPagesRef.current = 0; // Reset ref too
     setPdfLoadingProgress(0);
+    setPdfKey(prev => prev + 1);
   };
 
-  const handlePdfLoadComplete = (numberOfPages, filePath) => {
+  const handlePdfLoadComplete = (numberOfPages) => {
     console.log(`✅ PDF loaded successfully: ${numberOfPages} pages`);
     setTotalPages(numberOfPages);
+    totalPagesRef.current = numberOfPages; // Update ref
+    setCurrentPage(1);
     setPdfLoadError(false);
   };
 
@@ -283,19 +294,34 @@ const FullViewThesisScreen = ({ navigation, route }) => {
   };
 
   const handlePageChanged = (page, numberOfPages) => {
+    console.log(`📄 Page changed: ${page} of ${numberOfPages}`);
     setCurrentPage(page);
-    console.log(`📄 Current page: ${page} of ${numberOfPages}`);
+    // Also update total pages if different
+    if (numberOfPages !== totalPages) {
+      setTotalPages(numberOfPages);
+      totalPagesRef.current = numberOfPages;
+    }
   };
 
+  // FIXED: Use the ref for totalPages to ensure it doesn't get lost
   const goToNextPage = () => {
-    if (pdfRef.current && currentPage < totalPages) {
-      pdfRef.current.setPage(currentPage + 1);
+    const currentTotalPages = totalPagesRef.current;
+    if (currentPage < currentTotalPages) {
+      const nextPage = currentPage + 1;
+      console.log(`➡️ Navigating to next page: ${nextPage} of ${currentTotalPages}`);
+      setCurrentPage(nextPage);
+      setPdfKey(prev => prev + 1);
+    } else {
+      console.log(`ℹ️ Already at last page: ${currentPage} of ${currentTotalPages}`);
     }
   };
 
   const goToPreviousPage = () => {
-    if (pdfRef.current && currentPage > 1) {
-      pdfRef.current.setPage(currentPage - 1);
+    if (currentPage > 1) {
+      const prevPage = currentPage - 1;
+      console.log(`⬅️ Navigating to previous page: ${prevPage} of ${totalPagesRef.current}`);
+      setCurrentPage(prevPage);
+      setPdfKey(prev => prev + 1);
     }
   };
 
@@ -431,19 +457,22 @@ const FullViewThesisScreen = ({ navigation, route }) => {
 
               <View style={styles.pageInfo}>
                 <Text style={styles.pageText}>
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} of {totalPages || totalPagesRef.current || '?'}
+                </Text>
+                <Text style={styles.pageDebug}>
+                  Total Pages: {totalPagesRef.current}
                 </Text>
               </View>
 
               <TouchableOpacity 
-                style={[styles.controlButton, currentPage >= totalPages && styles.controlButtonDisabled]}
+                style={[styles.controlButton, currentPage >= (totalPages || totalPagesRef.current) && styles.controlButtonDisabled]}
                 onPress={goToNextPage}
-                disabled={currentPage >= totalPages}
+                disabled={currentPage >= (totalPages || totalPagesRef.current)}
               >
-                <Text style={[styles.controlText, currentPage >= totalPages && styles.controlTextDisabled]}>
+                <Text style={[styles.controlText, currentPage >= (totalPages || totalPagesRef.current) && styles.controlTextDisabled]}>
                   Next
                 </Text>
-                <Icon name="chevron-right" size={responsiveSize(24)} color={currentPage >= totalPages ? "#999" : "#dc3545"} />
+                <Icon name="chevron-right" size={responsiveSize(24)} color={currentPage >= (totalPages || totalPagesRef.current) ? "#999" : "#dc3545"} />
               </TouchableOpacity>
             </View>
 
@@ -458,25 +487,26 @@ const FullViewThesisScreen = ({ navigation, route }) => {
             {pdfUrl && !pdfLoadError ? (
               <View style={styles.pdfContainer}>
                 <Pdf
+                  key={`${pdfKey}-${currentPage}`}
                   ref={pdfRef}
                   source={{ 
                     uri: pdfUrl,
-                    cache: false, // Disable caching for security
+                    cache: false,
                   }}
+                  page={currentPage}
                   style={styles.pdf}
                   onLoadComplete={handlePdfLoadComplete}
                   onPageChanged={handlePageChanged}
                   onError={handlePdfError}
                   onPressLink={(uri) => {
                     console.log(`Link pressed: ${uri}`);
-                    // Block external links for security
                     Alert.alert('Security Notice', 'External links are disabled in secure mode.');
                   }}
                   enablePaging={true}
                   enableRTL={false}
-                  enableAnnotationRendering={false} // Disable annotations for security
+                  enableAnnotationRendering={false}
                   fitPolicy={0}
-                  trustAllCerts={Platform.OS === 'ios'} // iOS requires this for some certificates
+                  trustAllCerts={Platform.OS === 'ios'}
                   spacing={10}
                   minScale={1.0}
                   maxScale={3.0}
@@ -484,21 +514,26 @@ const FullViewThesisScreen = ({ navigation, route }) => {
                     <View style={styles.pdfLoading}>
                       <ActivityIndicator size="large" color="#dc3545" />
                       <Text style={styles.pdfLoadingText}>Loading secure thesis document...</Text>
-                      {pdfLoadingProgress > 0 && (
-                        <Text style={styles.progressText}>
-                          Progress: {Math.round(pdfLoadingProgress * 100)}%
-                        </Text>
-                      )}
                     </View>
                   }
                 />
+                
+                {/* Page Overlay */}
+                <View style={styles.pageOverlay}>
+                  <Text style={styles.pageOverlayText}>
+                    Page {currentPage} of {totalPages || totalPagesRef.current || '?'}
+                  </Text>
+                </View>
               </View>
             ) : (
               <View style={styles.errorContainer}>
                 <Icon name="alert-circle" size={responsiveSize(48)} color="#dc3545" />
                 <Text style={styles.errorTitle}>Failed to Load PDF</Text>
                 <Text style={styles.errorMessage}>
-                  The thesis document could not be loaded. Please try again later.
+                  {pdfLoadError 
+                    ? 'The thesis document could not be loaded. Please try again later.'
+                    : 'Preparing document...'
+                  }
                 </Text>
                 <View style={styles.errorButtons}>
                   <TouchableOpacity 
@@ -987,6 +1022,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: responsiveSize(14),
     fontWeight: 'bold',
+  },
+  pageOverlay: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: responsiveSize(12),
+    paddingVertical: responsiveSize(6),
+    borderRadius: responsiveSize(4),
+  },
+  pageOverlayText: {
+    color: '#FFFFFF',
+    fontSize: responsiveSize(12),
+    fontWeight: 'bold',
+  },
+  pageDebug: {
+    fontSize: responsiveSize(8),
+    color: '#666',
+    marginTop: 2,
   },
 });
 

@@ -44,11 +44,6 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
     newPassword: '',
     confirmPassword: ''
   });
-  const [preferences, setPreferences] = useState({
-    email_notifications: true,
-    weekly_recommendations: true,
-    thesis_reminders: true
-  });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -140,12 +135,6 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
         });
       }
 
-      // Load preferences
-      const savedPreferences = await AsyncStorage.getItem(`user_preferences_${currentUser.user_id}`);
-      if (savedPreferences) {
-        setPreferences(JSON.parse(savedPreferences));
-      }
-
     } catch (error) {
       console.error('Error fetching user data:', error);
       setError('Failed to load user data');
@@ -206,13 +195,6 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
     });
   };
 
-  const handlePreferenceChange = (preference) => {
-    setPreferences(prev => ({
-      ...prev,
-      [preference]: !prev[preference]
-    }));
-  };
-
   const handleSave = async () => {
     setSaving(true);
     setError('');
@@ -266,9 +248,6 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
       };
       await AsyncStorage.setItem('user', JSON.stringify(updatedUserData));
       setUser(updatedUserData);
-
-      // Save preferences
-      await AsyncStorage.setItem(`user_preferences_${user.user_id}`, JSON.stringify(preferences));
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -694,61 +673,6 @@ const AccountSettingsScreen = ({ navigation, onLogout }) => {
             </View>
           )}
 
-          {/* Preferences */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Icon name="bell" size={responsiveSize(20)} color="#dc3545" />
-              <Text style={styles.sectionTitle}>Preferences</Text>
-            </View>
-            
-            <View style={styles.preferencesContainer}>
-              <TouchableOpacity 
-                style={styles.preferenceItem}
-                onPress={() => handlePreferenceChange('email_notifications')}
-              >
-                <View style={[
-                  styles.checkbox,
-                  preferences.email_notifications && styles.checkboxChecked
-                ]}>
-                  {preferences.email_notifications && (
-                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                  )}
-                </View>
-                <Text style={styles.preferenceText}>Email notifications for request updates</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.preferenceItem}
-                onPress={() => handlePreferenceChange('weekly_recommendations')}
-              >
-                <View style={[
-                  styles.checkbox,
-                  preferences.weekly_recommendations && styles.checkboxChecked
-                ]}>
-                  {preferences.weekly_recommendations && (
-                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                  )}
-                </View>
-                <Text style={styles.preferenceText}>Weekly research recommendations</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={styles.preferenceItem}
-                onPress={() => handlePreferenceChange('thesis_reminders')}
-              >
-                <View style={[
-                  styles.checkbox,
-                  preferences.thesis_reminders && styles.checkboxChecked
-                ]}>
-                  {preferences.thesis_reminders && (
-                    <Icon name="check" size={responsiveSize(14)} color="#FFFFFF" />
-                  )}
-                </View>
-                <Text style={styles.preferenceText}>Thesis access reminders</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
           {/* Security */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -1159,32 +1083,6 @@ const styles = StyleSheet.create({
     fontSize: responsiveSize(12),
     color: '#166534',
     marginTop: responsiveSize(4),
-  },
-  preferencesContainer: {
-    gap: responsiveSize(12),
-  },
-  preferenceItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: responsiveSize(20),
-    height: responsiveSize(20),
-    borderWidth: 2,
-    borderColor: '#D1D5DB',
-    borderRadius: responsiveSize(4),
-    marginRight: responsiveSize(12),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: '#dc3545',
-    borderColor: '#dc3545',
-  },
-  preferenceText: {
-    fontSize: responsiveSize(14),
-    color: '#374151',
-    flex: 1,
   },
   securityContainer: {
     gap: responsiveSize(16),

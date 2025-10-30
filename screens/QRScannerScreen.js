@@ -280,15 +280,6 @@ const QRScannerScreen = ({ navigation }) => {
             <Text style={styles.rescanButtonText}>Tap to Scan Again</Text>
           </TouchableOpacity>
         )}
-
-        {/* Manual Input Option */}
-        <TouchableOpacity
-          style={styles.manualButton}
-          onPress={() => navigation.navigate('ManualThesisInput')}
-        >
-          <Icon name="keyboard" size={16} color="#666" />
-          <Text style={styles.manualButtonText}>Enter Thesis ID Manually</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
